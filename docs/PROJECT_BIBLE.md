@@ -191,10 +191,22 @@ Tab 2 provides predictive foresight for future parking availability. It allows t
 
 ### 5.4 Data Provenance
 - **Historical Occupancy:** Tier B (Database Derived). 28 days of continuous 15-minute resolution occupancy readings ($2,688$ intervals per zone $\times 9$ zones $= 24,192$ records) in `occupancy_history`.
-- **Web-Scraped & Registered Mall Sales, Events & Concerts:** Tier C / Empirical External Ingestion. Sourced from Megaworld Lifestyle Malls official events and promotional registers (`megaworld-lifestylemalls.com`), mall social feeds, and concert listings across target townships:
-  - *Venice Grand Canal Mall:* "Venice Gondola Fest & Grand Weekend Sale" (3-Day holiday sale + acoustic live sets; Traffic Impact Factor: $1.45\times$).
-  - *Uptown Bonifacio (Uptown Mall Retail Deck):* "Uptown BGC Payday Midnight Madness" (Late-night shopping, DJ performances at The Island, cinema premiere screenings; Traffic Impact Factor: $1.35\times$).
-  - *Eastwood City (Eastwood Mall Retail Deck):* "Eastwood Citywalk Food & Beer Festival" (Open-air plaza dining festival, live indie band concerts; Traffic Impact Factor: $1.30\times$).
+- **Real-Time Web-Scraped & Registered Mall Sales, Events & Concerts:** Tier C / Live Empirical Multi-Channel Ingestion. Sourced in real time across the **four official Facebook accounts** and Megaworld's production Contentstack Headless CMS Delivery API (`cdn.contentstack.io`), executed via `social_event_scraper.py`:
+  - *Official Facebook Channels Monitored:*
+    - **Uptown Bonifacio / Uptown Mall:** `facebook.com/MegaworldUptownMall` (`Uptown Mall Retail Deck`)
+    - **McKinley Hill / Venice Grand Canal:** `facebook.com/VeniceGrandCanal` (`Venice Grand Canal Mall Deck`)
+    - **Eastwood City:** `facebook.com/eastwoodcity` (`Eastwood Mall Retail Deck`)
+    - **Megaworld Lifestyle Malls (All Sites):** `facebook.com/megaworldlifestylemalls` (`All Retail Malls`)
+  - *Contentstack Headless CMS Delivery API:* Live promotional experiences and digital campaign banners partitioned by township UIDs:
+    - Uptown Bonifacio: `blt7c3a550ebf444313`
+    - Eastwood City: `blt7136c39bdc19e124`
+    - McKinley Hill: `blt976b2a38f2726122`
+  - *Calibrated Event Typology & Empirical Traffic Impact Multipliers:*
+    - *Mall-Wide 3-Day Sales & Tourism Festivals:* $1.45\times$ (+45% peak volume surge).
+    - *Payday Midnight Madness & Live Concerts:* $1.35\times$ (+35% late-evening volume surge).
+    - *Open-Air Food Fairs & Plaza Dining:* $1.30\times$ (+30% plaza volume surge).
+    - *Holiday & Community Activities:* $1.25\times$ (+25% volume surge).
+    - *Promotional Campaigns & Sales:* $1.18\times$ (+18% volume surge).
 - **Weather Telemetry:** Tier B/C (Live API). Sourced in real time from Open-Meteo API using Metro Manila township coordinates:
   - Uptown Bonifacio: $14.5562^\circ\text{ N}, 121.0543^\circ\text{ E}$
   - Eastwood City: $14.6094^\circ\text{ N}, 121.0805^\circ\text{ E}$
@@ -214,14 +226,16 @@ Tab 2 provides predictive foresight for future parking availability. It allows t
      $$\mu_{\text{causal}}(z, h, t) = \frac{1}{|D_{<t}|} \sum_{d \in D_{<t}} O(z, h, d)$$
    - `zone_id`: Categorical integer identifier.
 
-2. **Automated Mall Event Web Scraping & Ingestion Pipeline:**
-   - **Scrape & Calendar Matching:** The pipeline executes `check_megaworld_events(site_name, target_dt)`, comparing the simulated or prospective arrival date against active promotional schedules:
+2. **Automated Multi-Channel Social & CMS Scraping Pipeline:**
+   - **Tri-Stream Ingestion Engine:** `social_event_scraper.py` synchronizes events through:
+     1. Live Megaworld Contentstack Delivery API queries (`cdn.contentstack.io/v3/content_types/experience/entries`).
+     2. Public search and syndication index queries targeting the four official Facebook handles.
+     3. Operational high-impact baseline registry to ensure 100% demo resilience during network dropouts.
+   - **Persistence & Caching:** Scraped records are normalized into SQLite table `scraped_events` in `data/parking.db` with a 30-minute Time-To-Live (TTL) cache, alongside an on-demand manual sync button in Tab 2.
+   - **Scrape & Calendar Matching:** The pipeline executes `check_megaworld_events(site_name, target_dt)`, comparing the simulated arrival date against active promotional schedules:
      $$\text{Active}(E) \iff E.\text{start\_date} \le \text{target\_date} \le E.\text{end\_date} \quad \wedge \quad (E.\text{site} = \text{site\_name} \lor \text{site\_name} = \text{"All Sites"})$$
-   - **Multiplicative Traffic Shock Application:** When an event is detected (`is_event = 1`), the raw gradient boosted prediction $\hat{y}_{\text{raw}}$ is dynamically amplified by the event's empirical impact factor:
+   - **Multiplicative Traffic Shock Application:** When an active event is matched (`is_event = 1`), the raw gradient boosted prediction $\hat{y}_{\text{raw}}$ is dynamically amplified by the event's empirical impact factor:
      $$\hat{y}_{\text{event}} = \min\left(1.0, \; \hat{y}_{\text{raw}} \times \text{TrafficImpactFactor}\right)$$
-     - *Mall-Wide 3-Day Sales & Tourism Festivals:* $\text{ImpactFactor} = 1.45$ (+45% peak volume surge).
-     - *Payday Midnight Madness Sales:* $\text{ImpactFactor} = 1.35$ (+35% late-evening volume surge).
-     - *Food & Beer Festivals / Live Concerts:* $\text{ImpactFactor} = 1.30$ (+30% plaza volume surge).
 
 3. **Weather & Environmental Adjustments:**
    If active precipitation ($\text{rain} > 0.5\text{mm}$) is returned by the Open-Meteo API:

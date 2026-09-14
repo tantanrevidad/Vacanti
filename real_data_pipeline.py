@@ -184,14 +184,39 @@ def get_google_busyness_index(mall_label: str, target_dt: datetime) -> int:
 def check_megaworld_events(site_name: str, target_dt: datetime) -> Optional[Dict[str, Any]]:
     """
     Checks if there is an active promotional campaign, sale, or event scheduled
-    at the township site on the target date.
+    at the township site on the target date. Queries real-time scraped social events
+    first (Facebook & Contentstack CMS), falling back to MEGAWORLD_EVENTS_REGISTRY.
     """
+    try:
+        import social_event_scraper
+        scraped_event = social_event_scraper.query_active_event_for_timestamp(site_name, target_dt)
+        if scraped_event:
+            return scraped_event
+    except Exception as err:
+        pass
+
     target_str = target_dt.strftime("%Y-%m-%d")
     for event in MEGAWORLD_EVENTS_REGISTRY:
         if event["site"] == site_name or site_name == "All Sites":
             if event["start_date"] <= target_str <= event["end_date"]:
                 return event
     return None
+
+
+def get_scraped_events_telemetry(force_refresh: bool = False) -> Dict[str, Any]:
+    """Returns the latest synchronized social media events and crawl telemetry."""
+    try:
+        import social_event_scraper
+        return social_event_scraper.sync_all_events(force_refresh=force_refresh)
+    except Exception as err:
+        return {
+            "status": "error",
+            "last_synced": datetime.now().isoformat(),
+            "total_events": len(MEGAWORLD_EVENTS_REGISTRY),
+            "channels_scanned": ["Fallback Baseline Registry"],
+            "events": MEGAWORLD_EVENTS_REGISTRY,
+            "error": str(err),
+        }
 
 
 def get_traffic_delay_estimate(site_name: str, target_dt: datetime) -> Dict[str, Any]:

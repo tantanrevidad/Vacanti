@@ -374,7 +374,12 @@ To prevent lookahead data leakage in time-series training, features are engineer
 2. `day_of_week`: Day index $[0 = \text{Monday}, \dots, 6 = \text{Sunday}]$.
 3. `is_weekend`: Binary flag ($\text{day\_of\_week} \ge 5$).
 4. `is_holiday`: Automated Philippine National Holiday flag from [`ph_holidays.py`](file:///c:/Users/Tedd/Documents/College/2nd%20year/OJT/Megaworld/Personal%20Project/parking-poc/ph_holidays.py) (Regular and Special Non-Working Holidays, 2024–2028).
-5. `is_event`: Megaworld promotional event, 3-day sale, or concert flag from [`real_data_pipeline.py`](file:///c:/Users/Tedd/Documents/College/2nd%20year/OJT/Megaworld/Personal%20Project/parking-poc/real_data_pipeline.py).
+5. `is_event`: Megaworld promotional event, 3-day sale, or live concert flag scraped in real time across the **four official Facebook accounts** and Megaworld Contentstack Headless CMS API via [`social_event_scraper.py`](file:///c:/Users/Tedd/Documents/College/2nd%20year/OJT/Megaworld/Personal%20Project/parking-poc/social_event_scraper.py) and [`real_data_pipeline.py`](file:///c:/Users/Tedd/Documents/College/2nd%20year/OJT/Megaworld/Personal%20Project/parking-poc/real_data_pipeline.py):
+   - `facebook.com/MegaworldUptownMall` (Uptown Bonifacio / Uptown Mall Retail Deck)
+   - `facebook.com/VeniceGrandCanal` (McKinley Hill / Venice Grand Canal Mall Deck)
+   - `facebook.com/eastwoodcity` (Eastwood City / Eastwood Mall Retail Deck)
+   - `facebook.com/megaworldlifestylemalls` (All Sites / General Lifestyle Malls)
+   - Megaworld Contentstack Headless Delivery API (`cdn.contentstack.io`) filtered by township UIDs.
 6. `google_busyness`: Empirical Google Places Popular Times foot-traffic index $[0, 100]$ derived from mobile GPS telemetry across Venice Grand Canal Mall, Uptown Mall, and Eastwood Mall.
 7. `rolling_avg_same_hour`: Historical expanding mean occupancy for the specific $(\text{zone\_id}, \text{hour})$ calculated strictly across prior days:
    $$\mu_{\text{causal}}(z, h, t) = \frac{1}{|D_{<t}|} \sum_{d \in D_{<t}} O(z, h, d)$$

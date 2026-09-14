@@ -296,6 +296,22 @@ def main():
     CREATE TABLE current_state (
         slot_id INTEGER PRIMARY KEY, status TEXT, updated_at TEXT
     );
+    CREATE TABLE IF NOT EXISTS scraped_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        source_platform TEXT,
+        township TEXT,
+        mall_deck TEXT,
+        title TEXT,
+        event_type TEXT,
+        description TEXT,
+        start_date TEXT,
+        end_date TEXT,
+        traffic_impact_factor REAL,
+        source_url TEXT,
+        image_url TEXT,
+        created_at TEXT,
+        is_active INTEGER DEFAULT 1
+    );
     """)
 
     # Sites

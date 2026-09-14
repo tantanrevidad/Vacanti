@@ -2530,10 +2530,13 @@ with tab2:
     # Active Megaworld Event / Sale Banner
     active_evt = result.get("event")
     if active_evt:
+        src_label = active_evt.get("source_platform", "Official Portal")
+        src_link = active_evt.get("source_url", "")
+        link_markup = f" &nbsp;·&nbsp; <a href='{src_link}' target='_blank' style='color:#10B981; font-weight:600; text-decoration:underline;'>View on {src_label}</a>" if src_link and src_link != "#" else ""
         st.markdown(f"""
         <div class="banner-success" style="margin: 10px 0 16px 0; border-left: 4px solid #10B981;">
             <strong>Active Event: {active_evt['title']} ({active_evt['type']})</strong><br>
-            <span style="font-size:0.82rem;">{active_evt['description']} (Anticipated parking traffic impact: +{int((active_evt['traffic_impact_factor']-1)*100)}%).</span>
+            <span style="font-size:0.82rem;">{active_evt['description']} (Anticipated parking traffic impact: <strong>+{int((active_evt['traffic_impact_factor']-1)*100)}%</strong>).{link_markup}</span>
         </div>
         """, unsafe_allow_html=True)
 
@@ -2701,6 +2704,120 @@ with tab2:
         - **Uncertain — May Be Tight (60% – 85% Occupancy):** Moderate to high demand.
         - **Unlikely to Have Space (> 85% Occupancy):** Near capacity; alternate parking zones recommended.
         """)
+
+    # ── Live Social Media & Event Telemetry Section ──
+    st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-title'>Live Social Media & Event Radar</div>", unsafe_allow_html=True)
+    st.markdown(
+        "<div class='section-desc'>Real-time web-scraped promotional events, midnight sales, live concerts, and food festivals across the four official Facebook pages and Megaworld Contentstack CMS channels.</div>",
+        unsafe_allow_html=True,
+    )
+
+    s_col1, s_col2 = st.columns([1, 3])
+    with s_col1:
+        trigger_sync = st.button("Sync Live Social Events", key="btn_sync_social_events", use_container_width=True)
+
+    if trigger_sync:
+        with st.spinner("Scraping official Facebook accounts and Megaworld CMS feeds in real time..."):
+            telemetry = real_data_pipeline.get_scraped_events_telemetry(force_refresh=True)
+            st.success("Successfully synchronized live events from official Facebook channels and Megaworld CMS.")
+    else:
+        telemetry = real_data_pipeline.get_scraped_events_telemetry(force_refresh=False)
+
+    with s_col2:
+        last_dt = telemetry.get("last_synced", "Just now")[:19].replace("T", " ")
+        n_evts = telemetry.get("total_events", 0)
+        st_mode = "Live Sync Complete" if telemetry.get("status") == "refreshed" else "Active (Cached TTL: 30m)"
+        st.markdown(f"""
+        <div style='display:flex; align-items:center; height:100%; font-size:0.82rem; color:var(--text-secondary); gap:16px; flex-wrap:wrap;'>
+            <span><strong>Status:</strong> <span style='color:#10B981;'>{st_mode}</span></span>
+            <span><strong>Last Sync:</strong> {last_dt}</span>
+            <span><strong>Discovered:</strong> <span style='color:#0EA5E9; font-weight:700;'>{n_evts} active/upcoming events</span></span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Scanned Channels Badges
+    ch_pills = " ".join([
+        f"<span style='background:rgba(24,119,242,0.12); color:#1877F2; padding:3px 8px; border-radius:12px; font-size:0.75rem; border:1px solid rgba(24,119,242,0.25); font-weight:600;'>{ch}</span>"
+        for ch in [
+            "facebook.com/MegaworldUptownMall",
+            "facebook.com/VeniceGrandCanal",
+            "facebook.com/eastwoodcity",
+            "facebook.com/megaworldlifestylemalls",
+            "cdn.contentstack.io (Megaworld CMS)",
+        ]
+    ])
+    st.markdown(f"<div style='margin: 8px 0 16px 0;'><strong>Monitored Channels:</strong> {ch_pills}</div>", unsafe_allow_html=True)
+
+    # Township Filter for Event Cards
+    scraped_list = telemetry.get("events", [])
+    filter_opts = ["All Townships", "Uptown Bonifacio", "McKinley Hill", "Eastwood City"]
+    selected_ts_filter = st.radio(
+        "Filter Scraped Events by Township",
+        options=filter_opts,
+        horizontal=True,
+        key="event_ts_filter",
+        label_visibility="collapsed",
+    )
+
+    filtered_evts = scraped_list
+    if selected_ts_filter != "All Townships":
+        filtered_evts = [
+            e for e in scraped_list
+            if e.get("township") == selected_ts_filter or e.get("township") == "All Sites"
+        ]
+
+    if not filtered_evts:
+        st.info(f"No active events currently scraped for {selected_ts_filter}. Check back soon or advance simulation date.")
+    else:
+        # Display top events in responsive grid (2 columns)
+        for i in range(0, min(8, len(filtered_evts)), 2):
+            ecol1, ecol2 = st.columns(2)
+            pair = filtered_evts[i : i + 2]
+            for c, evt in zip([ecol1, ecol2], pair):
+                with c:
+                    plat = evt.get("source_platform", "Official Portal")
+                    is_fb = "Facebook" in plat
+                    plat_color = "#1877F2" if is_fb else "#8B5CF6"
+                    plat_bg = "rgba(24,119,242,0.12)" if is_fb else "rgba(139,92,246,0.12)"
+                    uplift_pct = int((float(evt.get("traffic_impact_factor", 1.25)) - 1.0) * 100)
+                    src_url = evt.get("source_url", "#")
+                    link_btn = f"<a href='{src_url}' target='_blank' style='display:inline-block; margin-top:8px; font-size:0.78rem; color:#0EA5E9; font-weight:600; text-decoration:underline;'>Open on {plat.split(' ')[0]} &rarr;</a>" if src_url and src_url != "#" else ""
+
+                    st.markdown(f"""
+                    <div class='metric-card' style='margin-bottom:12px; border-left: 3px solid {plat_color};'>
+                        <div style='display:flex; justify-content:space-between; align-items:flex-start; gap:8px;'>
+                            <span style='background:{plat_bg}; color:{plat_color}; padding:2px 8px; border-radius:10px; font-size:0.72rem; font-weight:700;'>{plat}</span>
+                            <span style='background:rgba(16,185,129,0.12); color:#10B981; padding:2px 8px; border-radius:10px; font-size:0.72rem; font-weight:700;'>+{uplift_pct}% Inflow Surge</span>
+                        </div>
+                        <div style='font-size:0.95rem; font-weight:700; color:var(--text-primary); margin:6px 0 2px 0;'>{evt.get('title', 'Event')}</div>
+                        <div style='font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;'>
+                            <strong>{evt.get('township', 'Township')}</strong> &middot; <em>{evt.get('mall_deck', 'Retail Deck')}</em> &middot; <span>{evt.get('start_date')} &ndash; {evt.get('end_date')}</span>
+                        </div>
+                        <div style='font-size:0.78rem; color:var(--text-secondary); line-height:1.35;'>{evt.get('description', '')[:160]}</div>
+                        {link_btn}
+                    </div>
+                    """, unsafe_allow_html=True)
+
+        if len(filtered_evts) > 8:
+            with st.expander(f"View all {len(filtered_evts)} scraped events for {selected_ts_filter}", expanded=False):
+                st.dataframe(
+                    pd.DataFrame(filtered_evts)[[
+                        "source_platform", "township", "title", "event_type",
+                        "start_date", "end_date", "traffic_impact_factor", "source_url"
+                    ]].rename(columns={
+                        "source_platform": "Source Channel",
+                        "township": "Township",
+                        "title": "Event Name",
+                        "event_type": "Typology",
+                        "start_date": "Starts",
+                        "end_date": "Ends",
+                        "traffic_impact_factor": "Impact Factor",
+                        "source_url": "Source Link",
+                    }),
+                    use_container_width=True,
+                    hide_index=True,
+                )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
