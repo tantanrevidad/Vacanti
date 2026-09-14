@@ -15,6 +15,7 @@ Combines:
   - Curated High-Impact Operational Baseline Fallback
 """
 
+import calendar
 import json
 import os
 import re
@@ -24,6 +25,32 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
+
+
+def sanitize_text(text: Optional[str]) -> str:
+    """
+    Sanitizes string by stripping HTML tags, HTML entities, emojis, and
+    non-ASCII characters to prevent Windows cp1252 charmap encoding errors
+    and maintain clean UI presentation.
+    """
+    if not text:
+        return ""
+    # Strip HTML tags
+    cleaned = re.sub(r"<[^>]+>", "", text)
+    # Decode common HTML entities
+    cleaned = (
+        cleaned.replace("&nbsp;", " ")
+        .replace("&amp;", "&")
+        .replace("&quot;", '"')
+        .replace("&#39;", "'")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+    )
+    # Strip emojis and non-ASCII characters
+    cleaned = cleaned.encode("ascii", "ignore").decode("ascii")
+    # Collapse multiple whitespace / newlines
+    return re.sub(r"\s+", " ", cleaned).strip()
+
 
 DB_PATH = "data/parking.db"
 
@@ -105,17 +132,18 @@ def classify_event_impact(title: str, description: str = "") -> Tuple[str, float
       - Mall-Wide Sale / Tourism Festival: 1.45x (+45% surge)
       - Live Concert / Midnight Madness: 1.35x (+35% surge)
       - Food Fair & Plaza Dining: 1.30x (+30% surge)
-      - Community & Lifestyle Promo: 1.18x (+18% surge)
+      - Holiday & Community Activity: 1.25x (+25% surge)
+      - Promotional Campaign / Sale: 1.18x (+18% surge)
     """
     text = (title + " " + description).lower()
 
-    if any(k in text for k in ["midnight", "grand sale", "mall wide", "mega sale", "fest", "festival", "tourism", "gondola"]):
+    if any(re.search(rf"\b{re.escape(k)}\b", text) for k in ["midnight", "grand sale", "mall wide", "mega sale", "fest", "festival", "tourism", "gondola"]):
         return "Mall Wide Sale / Tourism Festival", 1.45
-    elif any(k in text for k in ["concert", "live music", "band", "countdown", "night", "anniversary", "party"]):
+    elif any(re.search(rf"\b{re.escape(k)}\b", text) for k in ["concert", "live music", "band", "countdown", "night", "anniversary", "party"]):
         return "Live Concert / Night Event", 1.35
-    elif any(k in text for k in ["food", "beer", "bazaar", "market", "fair", "matcha", "dine", "dining"]):
+    elif any(re.search(rf"\b{re.escape(k)}\b", text) for k in ["food", "beer", "bazaar", "market", "fair", "matcha", "dine", "dining"]):
         return "Open-Air Food Fair & Dining", 1.30
-    elif any(k in text for k in ["run", "fitness", "pet", "easter", "christmas", "holiday"]):
+    elif any(re.search(rf"\b{re.escape(k)}\b", text) for k in ["run", "fitness", "pet", "easter", "christmas", "holiday"]):
         return "Holiday & Community Activity", 1.25
     else:
         return "Promotional Campaign / Sale", 1.18
@@ -154,8 +182,9 @@ def extract_dates_from_text(title: str, pub_date_str: str = "") -> Tuple[str, st
             year = base_date.year
             month_num = datetime.strptime(month_str, "%b").month
 
-            s_dt = datetime(year, month_num, min(start_day, 28))
-            e_dt = datetime(year, month_num, min(end_day, 28))
+            max_days = calendar.monthrange(year, month_num)[1]
+            s_dt = datetime(year, month_num, min(start_day, max_days))
+            e_dt = datetime(year, month_num, min(end_day, max_days))
             return s_dt.strftime("%Y-%m-%d"), e_dt.strftime("%Y-%m-%d")
         except Exception:
             pass
@@ -165,13 +194,126 @@ def extract_dates_from_text(title: str, pub_date_str: str = "") -> Tuple[str, st
     return start_str, end_str
 
 
+TARGET_TOWNSHIP_DEFINITIONS = {
+    "Uptown Bonifacio": {
+        "keywords": ["uptown", "uptown bonifacio", "uptown mall", "uptown bgc", "uptown palazzo"],
+        "mall_deck": "Uptown Mall Retail Deck",
+        "cms_uid": "blt7c3a550ebf444313",
+    },
+    "McKinley Hill": {
+        "keywords": ["mckinley", "mckinley hill", "venice", "venice grand canal", "grand canal mall"],
+        "mall_deck": "Venice Grand Canal Mall Deck",
+        "cms_uid": "blt976b2a38f2726122",
+    },
+    "Eastwood City": {
+        "keywords": ["eastwood", "eastwood city", "eastwood mall", "citywalk", "cyberpark"],
+        "mall_deck": "Eastwood Mall Retail Deck",
+        "cms_uid": "blt7136c39bdc19e124",
+    },
+}
+
+OTHER_NON_TARGET_LOCATIONS = [
+    "iloilo", "festive walk", "boracay", "newcoast", "cebu", "mactan", "newtown", "newport",
+    "alabang", "southwoods", "lucky chinatown", "chinatown", "binondo", "davao", "bacolod",
+    "northill", "upper east", "pampanga", "capital town", "twin lakes", "arcovia", "clark",
+    "tagaytay", "california garden", "san lorenzo", "pasig", "las pinas", "paranaque",
+    "maple grove", "cavite", "sta barbara", "santa barbara", "palawan", "forbes town",
+]
+
+NON_EVENT_FILTER_KEYWORDS = [
+    r"\baward\b", r"\bawards\b", r"\bquill\b", r"\brecognition\b", r"\bwinner\b", r"\bwins\b",
+    r"\btriumphed\b", r"\bclinches\b", r"\branked\b", r"\bhonored\b", r"\btop employer\b",
+    r"\bearnings\b", r"\bdividend\b", r"\bshares\b", r"\bstock\b", r"\bfinancial\b",
+    r"\bappoints\b", r"\bnamed as\b", r"\bannual meeting\b", r"\bmemorandum\b", r"\bmou\b",
+    r"\bpartnership\b", r"\bjoint venture\b", r"\bturnover\b", r"\bgroundbreaking\b",
+    r"\bmarket intelligence\b", r"\bmarket report\b", r"\breal estate market\b", r"\bproperty market\b",
+    r"\bchatbot\b", r"\bmegan\b", r"\bhackathon\b", r"\bspotted\b", r"\bholy mass\b",
+    r"\bmass will be celebrated\b", r"\bprayer intentions\b",
+]
+
+EVENT_TRIGGER_KEYWORDS = [
+    r"\bfest\b", r"\bfestival\b", r"\bfestivities\b", r"\bconcert\b", r"\blive music\b",
+    r"\blive band\b", r"\bperformance\b", r"\bshow\b", r"\bgig\b", r"\bcountdown\b",
+    r"(?<!uptown\s)\bparade\b", r"\bcosplay\b", r"\bhalloween\b", r"\bchristmas\b", r"\bholiday\b",
+    r"\banniversary\b", r"\bsale\b", r"\bmidnight\b", r"\bpayday\b", r"\bgrand sale\b",
+    r"\bdiscount\b", r"\bbazaar\b", r"\bfair\b", r"\bmarket\b", r"\bpop-up\b", r"\bexpo\b",
+    r"\bpetstival\b", r"\bpet fest\b", r"\bpet blessing\b", r"\bfun run\b", r"\bmarathon\b",
+    r"\bmatcha festival\b", r"\bmatcha fest\b", r"\bmatcha market\b", r"\bcollective\b",
+    r"\bculinary\b", r"\bexhibit\b", r"\bgrand opening\b", r"\blistening party\b",
+]
+
+
+def resolve_target_township(
+    title: str, text: str, source_handle: str, t_uids: Optional[List[str]] = None
+) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Strictly verifies and attributes an event to one of our three target townships:
+      - Uptown Bonifacio
+      - McKinley Hill
+      - Eastwood City
+    Rejects provincial malls (Iloilo, Boracay, Cebu, Southwoods, Lucky Chinatown, etc.),
+    corporate press releases, awards, and routine non-event posts.
+    """
+    full_text = sanitize_text(title + " " + text).lower()
+
+    # 1. Reject non-event corporate releases, PR awards, and church mass
+    for pat in NON_EVENT_FILTER_KEYWORDS:
+        if re.search(pat, full_text):
+            # Only allow if it's explicitly a major concert, countdown, or festival celebration
+            if not any(re.search(rf"\b{k}\b", full_text) for k in ["concert", "countdown", "festival", "bazaar"]):
+                return None, None
+
+    # 2. Must meet event trigger keywords
+    has_event_trigger = any(re.search(pat, full_text) for pat in EVENT_TRIGGER_KEYWORDS)
+    if not has_event_trigger:
+        return None, None
+
+    # 3. Handle-specific attribution with provincial guard
+    if source_handle == "MegaworldUptownMall":
+        if not any(re.search(rf"\b{loc}\b", full_text) for loc in OTHER_NON_TARGET_LOCATIONS) or "uptown" in full_text:
+            return "Uptown Bonifacio", TARGET_TOWNSHIP_DEFINITIONS["Uptown Bonifacio"]["mall_deck"]
+    elif source_handle == "VeniceGrandCanal":
+        if not any(re.search(rf"\b{loc}\b", full_text) for loc in OTHER_NON_TARGET_LOCATIONS) or any(k in full_text for k in ["venice", "mckinley"]):
+            return "McKinley Hill", TARGET_TOWNSHIP_DEFINITIONS["McKinley Hill"]["mall_deck"]
+    elif source_handle == "eastwoodcity":
+        if not any(re.search(rf"\b{loc}\b", full_text) for loc in OTHER_NON_TARGET_LOCATIONS) or "eastwood" in full_text:
+            return "Eastwood City", TARGET_TOWNSHIP_DEFINITIONS["Eastwood City"]["mall_deck"]
+
+    # 4. For Contentstack CMS or megaworldlifestylemalls (which cover all malls across the Philippines)
+    has_other_loc = any(re.search(rf"\b{loc}\b", full_text) for loc in OTHER_NON_TARGET_LOCATIONS)
+
+    # Check matches against our 3 target townships
+    matched = []
+    for ts_name, meta in TARGET_TOWNSHIP_DEFINITIONS.items():
+        if t_uids and meta["cms_uid"] in t_uids:
+            matched.append(ts_name)
+        elif any(re.search(rf"\b{re.escape(k)}\b", full_text) for k in meta["keywords"]):
+            matched.append(ts_name)
+
+    if matched:
+        ts = matched[0]
+        return ts, TARGET_TOWNSHIP_DEFINITIONS[ts]["mall_deck"]
+
+    # If it mentions another location and NONE of our 3 targets -> REJECT!
+    if has_other_loc:
+        return None, None
+
+    # If explicitly all Megaworld Lifestyle Malls nationwide (e.g. nationwide 3-day sale)
+    if any(k in full_text for k in ["all megaworld malls", "across all malls", "lifestyle malls nationwide", "all lifestyle malls", "all megaworld lifestyle malls"]):
+        return "All Sites", "All Retail Malls"
+
+    # Otherwise, not specifically tied to our 3 townships -> do not pollute our dataset
+    return None, None
+
+
 def fetch_contentstack_experiences() -> List[Dict[str, Any]]:
     """
     Ingests live marketing campaigns and festival experiences directly from
-    Megaworld's official Contentstack Headless CMS Delivery API.
+    Megaworld's official Contentstack Headless CMS Delivery API, strictly filtered
+    to Uptown Bonifacio, McKinley Hill, and Eastwood City.
     """
     events = []
-    url = f"https://cdn.contentstack.io/v3/content_types/experience/entries?environment={CONTENTSTACK_ENV}&limit=20"
+    url = f"https://cdn.contentstack.io/v3/content_types/experience/entries?environment={CONTENTSTACK_ENV}&limit=30"
     headers = {
         "api_key": CONTENTSTACK_API_KEY,
         "access_token": CONTENTSTACK_ACCESS_TOKEN,
@@ -183,28 +325,22 @@ def fetch_contentstack_experiences() -> List[Dict[str, Any]]:
         with urllib.request.urlopen(req, timeout=6) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             for entry in data.get("entries", []):
-                title = entry.get("title") or entry.get("experience_title") or ""
-                desc = entry.get("experience_description") or ""
+                raw_title = entry.get("title") or entry.get("experience_title") or ""
+                title = sanitize_text(raw_title)
+                raw_desc = entry.get("experience_description") or ""
                 raw_html = entry.get("experience_content") or ""
-                clean_desc = re.sub(r'<[^>]+>', '', raw_html).strip()
-                if not desc:
+                clean_desc = sanitize_text(raw_html)
+                if not raw_desc:
                     desc = clean_desc[:220] if clean_desc else title
+                else:
+                    desc = sanitize_text(raw_desc)[:220]
 
-                township = "All Sites"
-                mall_deck = "All Retail Malls"
                 t_list = entry.get("townships", [])
                 t_uids = [t.get("uid") for t in t_list if isinstance(t, dict)]
 
-                title_lower = title.lower() + " " + desc.lower()
-                if OFFICIAL_FB_CHANNELS["Uptown Bonifacio"]["cms_uid"] in t_uids or "uptown" in title_lower:
-                    township = "Uptown Bonifacio"
-                    mall_deck = OFFICIAL_FB_CHANNELS["Uptown Bonifacio"]["mall_deck"]
-                elif OFFICIAL_FB_CHANNELS["Eastwood City"]["cms_uid"] in t_uids or "eastwood" in title_lower:
-                    township = "Eastwood City"
-                    mall_deck = OFFICIAL_FB_CHANNELS["Eastwood City"]["mall_deck"]
-                elif OFFICIAL_FB_CHANNELS["McKinley Hill"]["cms_uid"] in t_uids or any(k in title_lower for k in ["mckinley", "venice"]):
-                    township = "McKinley Hill"
-                    mall_deck = OFFICIAL_FB_CHANNELS["McKinley Hill"]["mall_deck"]
+                township, mall_deck = resolve_target_township(title, desc, "CMS", t_uids)
+                if not township:
+                    continue  # Filter out non-target malls (e.g. Iloilo, Boracay, etc.)
 
                 img_obj = entry.get("experience_image") or entry.get("experience_banner") or {}
                 img_url = img_obj.get("url") if isinstance(img_obj, dict) else ""
@@ -235,7 +371,7 @@ def fetch_contentstack_experiences() -> List[Dict[str, Any]]:
 def fetch_facebook_feed_events() -> List[Dict[str, Any]]:
     """
     Queries public search and syndication streams specifically filtered to the 4
-    official Facebook pages provided by the user.
+    official Facebook pages provided by the user, strictly validating township relevance.
     """
     events = []
 
@@ -244,10 +380,16 @@ def fetch_facebook_feed_events() -> List[Dict[str, Any]]:
         deck = meta["mall_deck"]
         fb_url = meta["url"]
 
-        queries = [
-            f"site:facebook.com/{handle}",
-            f'"{township}" (event OR sale OR concert OR festival OR bazaar)' if township != "All Sites" else '"Megaworld Lifestyle Malls" (sale OR festival OR event)'
-        ]
+        if township == "All Sites":
+            queries = [
+                f'site:facebook.com/{handle} ("Uptown" OR "Eastwood" OR "Venice" OR "McKinley")',
+                f'site:facebook.com/{handle} ("sale" OR "festival" OR "concert" OR "midnight")',
+            ]
+        else:
+            queries = [
+                f"site:facebook.com/{handle}",
+                f'"{township}" (event OR sale OR concert OR festival OR bazaar)'
+            ]
 
         for q in queries:
             try:
@@ -257,27 +399,28 @@ def fetch_facebook_feed_events() -> List[Dict[str, Any]]:
                 with urllib.request.urlopen(req, timeout=6) as resp:
                     root = ET.fromstring(resp.read())
                     for item in root.findall(".//item")[:10]:
-                        title = item.find("title").text if item.find("title") is not None else ""
+                        raw_title = item.find("title").text if item.find("title") is not None else ""
                         link = item.find("link").text if item.find("link") is not None else fb_url
                         pub_date = item.find("pubDate").text if item.find("pubDate") is not None else ""
-                        desc = item.find("description").text if item.find("description") is not None else ""
-                        clean_desc = re.sub(r'<[^>]+>', '', desc).strip()
+                        raw_desc = item.find("description").text if item.find("description") is not None else ""
 
-                        if not any(k in (title + " " + clean_desc).lower() for k in [
-                            "sale", "fest", "concert", "bazaar", "promo", "show", "parade", "night",
-                            "food", "dine", "band", "celebrat", "anniversary", "launch", "weekend"
-                        ]):
-                            continue
+                        title = sanitize_text(raw_title)
+                        clean_desc = sanitize_text(raw_desc)
+
+                        # Strictly resolve township relevance and verify event qualification
+                        res_township, res_deck = resolve_target_township(title, clean_desc, handle)
+                        if not res_township:
+                            continue  # Drop irrelevant / non-target events
 
                         s_date, e_date = extract_dates_from_text(title, pub_date)
                         evt_type, impact = classify_event_impact(title, clean_desc)
 
-                        clean_title = title.split(" - ")[0].strip()
+                        clean_title = sanitize_text(title.split(" - ")[0].strip())
 
                         events.append({
                             "source_platform": f"Facebook (@{handle})",
-                            "township": township,
-                            "mall_deck": deck,
+                            "township": res_township,
+                            "mall_deck": res_deck,
                             "title": clean_title,
                             "event_type": evt_type,
                             "description": (clean_desc[:200] if clean_desc else clean_title),
@@ -416,7 +559,18 @@ def sync_all_events(force_refresh: bool = False, db_path: str = DB_PATH) -> Dict
     # Deduplicate by (township, title)
     deduped = {}
     for evt in discovered:
-        key = (evt["township"], evt["title"].strip().lower()[:35])
+        clean_t = sanitize_text(evt.get("title", ""))
+        clean_d = sanitize_text(evt.get("description", ""))
+        clean_ts = sanitize_text(evt.get("township", ""))
+        clean_deck = sanitize_text(evt.get("mall_deck", ""))
+        clean_type = sanitize_text(evt.get("event_type", ""))
+        evt["title"] = clean_t
+        evt["description"] = clean_d
+        evt["township"] = clean_ts
+        evt["mall_deck"] = clean_deck
+        evt["event_type"] = clean_type
+
+        key = (clean_ts, clean_t.lower()[:35])
         if key not in deduped:
             deduped[key] = evt
         else:
