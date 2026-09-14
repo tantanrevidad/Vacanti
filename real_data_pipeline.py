@@ -9,10 +9,13 @@ Real-world external data ingestion pipeline for Megaworld Townships:
 """
 
 import json
+import time
 import urllib.request
 import urllib.error
 from datetime import datetime
 from typing import Dict, Any, Optional
+
+_WEATHER_CACHE: Dict[str, Any] = {"data": None, "ts": 0.0}
 
 # Coordinates for Megaworld Townships in Metro Manila
 TOWNSHIP_COORDINATES = {
@@ -96,7 +99,13 @@ def fetch_open_meteo_weather(lat: float = 14.5350, lon: float = 121.0509) -> Dic
     """
     Fetches real-time weather and hourly precipitation forecasts for Metro Manila
     via the public Open-Meteo Weather API (No API key required).
+    Cached for 10 minutes to guarantee instant prediction throughput.
     """
+    global _WEATHER_CACHE
+    now_ts = time.time()
+    if _WEATHER_CACHE["data"] is not None and (now_ts - _WEATHER_CACHE["ts"]) < 600:
+        return _WEATHER_CACHE["data"]
+
     url = (
         f"https://api.open-meteo.com/v1/forecast?"
         f"latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,precipitation,rain,weather_code,wind_speed_10m"
@@ -124,7 +133,7 @@ def fetch_open_meteo_weather(lat: float = 14.5350, lon: float = 121.0509) -> Dic
                 else:
                     condition = "Cloudy / Humid"
 
-                return {
+                res = {
                     "source": "Open-Meteo Live API",
                     "status": "online",
                     "temperature_c": temp_c,
@@ -134,6 +143,9 @@ def fetch_open_meteo_weather(lat: float = 14.5350, lon: float = 121.0509) -> Dic
                     "is_raining": rain_mm > 0.5 or code in [51, 53, 55, 61, 63, 65, 80, 81, 95, 96, 99],
                     "timestamp": current.get("time", datetime.now().isoformat()),
                 }
+                _WEATHER_CACHE["data"] = res
+                _WEATHER_CACHE["ts"] = now_ts
+                return res
     except Exception:
         pass
 

@@ -227,10 +227,15 @@ Tab 2 provides predictive foresight for future parking availability. It allows t
    - `zone_id`: Categorical integer identifier.
 
 2. **Automated Multi-Channel Social & CMS Scraping Pipeline:**
-   - **Tri-Stream Ingestion Engine:** `social_event_scraper.py` synchronizes events through:
+   - **Tri-Stream Ingestion Engine:** `social_event_scraper.py` synchronizes commercial events through:
      1. Live Megaworld Contentstack Delivery API queries (`cdn.contentstack.io/v3/content_types/experience/entries`).
-     2. Public search and syndication index queries targeting the four official Facebook handles.
+     2. Public search and syndication index queries targeting the four official Facebook handles (`@MegaworldUptownMall`, `@VeniceGrandCanal`, `@eastwoodcity`, and `@megaworldlifestylemalls`).
      3. Operational high-impact baseline registry to ensure 100% demo resilience during network dropouts.
+   - **Strict Township Disambiguation & Noise Filtering (`resolve_target_township`):**
+     - *Provincial Property Rejection:* Rigorously eliminates non-target Megaworld malls across Luzon, Visayas, and Mindanao (Festive Walk Iloilo, Boracay Newcoast, Lucky Chinatown Binondo, Southwoods Mall Biñan, Mactan Cebu, Davao Park District, Bacolod, Capital Town Pampanga, Arcovia, Twin Lakes, etc.) via boundary exclusion (`OTHER_NON_TARGET_LOCATIONS`).
+     - *Corporate PR & Non-Event Filtering:* Discards corporate awards (Quill Awards, Retail Asia Awards), financial reports, earnings calls, chatbot PR, Sunday church mass livestreams, and celebrity spotting posts via regex word-boundary patterns (`NON_EVENT_FILTER_KEYWORDS`).
+     - *Regex Word-Boundary Protection:* Employs strict word boundaries `\b` (e.g. `\bfest\b`, `(?<!uptown\s)\bparade\b`) to eliminate substring collisions (such as `'fest'` falsely matching inside `'lifestyle'`, or venue addresses like `Uptown Parade` falsely matching `parade`).
+     - *String & Emoji Sanitization (`sanitize_text`):* Automatically strips raw emojis and non-ASCII sequences while decoding HTML entities (`&amp;`, `&quot;`), guaranteeing 100% resilience against Windows console `cp1252` charmap encoding errors.
    - **Persistence & Caching:** Scraped records are normalized into SQLite table `scraped_events` in `data/parking.db` with a 30-minute Time-To-Live (TTL) cache, alongside an on-demand manual sync button in Tab 2.
    - **Scrape & Calendar Matching:** The pipeline executes `check_megaworld_events(site_name, target_dt)`, comparing the simulated arrival date against active promotional schedules:
      $$\text{Active}(E) \iff E.\text{start\_date} \le \text{target\_date} \le E.\text{end\_date} \quad \wedge \quad (E.\text{site} = \text{site\_name} \lor \text{site\_name} = \text{"All Sites"})$$
@@ -238,8 +243,9 @@ Tab 2 provides predictive foresight for future parking availability. It allows t
      $$\hat{y}_{\text{event}} = \min\left(1.0, \; \hat{y}_{\text{raw}} \times \text{TrafficImpactFactor}\right)$$
 
 3. **Weather & Environmental Adjustments:**
-   If active precipitation ($\text{rain} > 0.5\text{mm}$) is returned by the Open-Meteo API:
-   $$\hat{y}_{\text{weather}} = \min(1.0, \; \hat{y}_{\text{event}} \times 1.08)$$
+   - **In-Memory Caching:** Open-Meteo live API queries are cached in memory for 10 minutes (`_WEATHER_CACHE` in `real_data_pipeline.py`), eliminating external network latency and ensuring instantaneous prediction recalculations.
+   - **Precipitation Shift Multiplier:** If active precipitation ($\text{rain} > 0.5\text{mm}$) is returned:
+     $$\hat{y}_{\text{weather}} = \min(1.0, \; \hat{y}_{\text{event}} \times 1.08)$$
 
 4. **Conservatism Bias (Safety Margin):**
    To avoid stranding drivers in saturated decks, borderline predictions are intentionally nudged toward "occupied":
