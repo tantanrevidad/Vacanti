@@ -13,3 +13,4 @@ plotly>=5.18
 ultralytics>=8.0
 opencv-python-headless>=4.8
 pytesseract>=0.3
+shapely>=2.0

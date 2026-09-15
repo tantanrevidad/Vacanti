@@ -1,0 +1,2198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Vacanti — Spatial Monolith Driver Portal</title>
+
+  <!-- Google Fonts: Playfair Display (Serif Luxury) & Plus Jakarta Sans (High-End Modern UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            bronze: {
+              DEFAULT: '#9A6235',
+              dark: '#7E4D25',
+              light: '#B89047',
+              gold: '#D4AF37',
+            },
+            champagne: {
+              DEFAULT: '#E5C396',
+              dark: '#A68A64',
+              light: '#F5E6D3',
+            },
+            cream: {
+              50: '#FDFBF9',
+              100: '#FAF7F2',
+              200: '#F4EDE4',
+              300: '#EBDCD0',
+            },
+            navy: {
+              950: '#080E1E',
+              900: '#0B132B',
+              850: '#111C38',
+              800: '#162244',
+              700: '#1E2D5A',
+              600: '#2A3D73',
+            },
+            signalGreen: '#05DF72',
+            signalRed: '#FF4242',
+            signalCyan: '#00D0FF',
+            signalAmber: '#FFB300',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* CSS Theme Custom Properties */
+    :root {
+      /* Light Mode: Rich Beige-Gold Theme */
+      --bg-app: #FAF7F2;
+      --bg-shell: #F4EDE4;
+      --bg-card: #FFFFFF;
+      --bg-card-subtle: #FAF7F2;
+      --bg-input: #F4EDE4;
+      --border-card: #E5D8C3;
+      --border-accent: rgba(212, 175, 55, 0.45);
+      --text-primary: #1E2028;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --accent-gold: #9A6235;
+      --accent-champagne: #B89047;
+      --accent-badge-bg: #F5EFE6;
+      --shadow-card: 0 10px 25px -4px rgba(184, 144, 71, 0.08), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
+      --deck-bg: #090D18;
+      --deck-border: #1E293B;
+    }
+
+    body.dark-theme {
+      /* Dark Mode: Rich Navy-Blue Theme */
+      --bg-app: #080E1E;
+      --bg-shell: #0B132B;
+      --bg-card: #111C38;
+      --bg-card-subtle: #162244;
+      --bg-input: #0B132B;
+      --border-card: #1E2D5A;
+      --border-accent: rgba(229, 195, 150, 0.35);
+      --text-primary: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --text-muted: #94A3B8;
+      --accent-gold: #E5C396;
+      --accent-champagne: #D4AF37;
+      --accent-badge-bg: #162244;
+      --shadow-card: 0 12px 30px -4px rgba(0, 0, 0, 0.6);
+      --deck-bg: #060A14;
+      --deck-border: #1E293B;
+    }
+
+    body {
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overscroll-behavior-y: contain;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Date & Time Input Picker Colors (Light vs Dark Mode) */
+    input[type="date"],
+    input[type="time"] {
+      color-scheme: light;
+      color: #9A6235 !important;
+      transition: color 0.3s ease, background-color 0.3s ease;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator {
+      filter: invert(40%) sepia(50%) saturate(600%) hue-rotate(350deg);
+      cursor: pointer;
+    }
+
+    body.dark-theme input[type="date"],
+    body.dark-theme input[type="time"] {
+      color-scheme: dark;
+      color: #E5C396 !important;
+    }
+    body.dark-theme input[type="date"]::-webkit-calendar-picker-indicator,
+    body.dark-theme input[type="time"]::-webkit-calendar-picker-indicator {
+      filter: invert(85%) sepia(35%) saturate(450%) hue-rotate(350deg);
+      cursor: pointer;
+    }
+
+    /* Architectural Geometric Wireframe Background */
+    .bg-wireframe {
+      background-color: #FAF7F2;
+      background-image: 
+        radial-gradient(circle at 50% 25%, rgba(255, 255, 255, 0.85) 0%, rgba(250, 247, 242, 0.45) 75%),
+        url("assets/bg_lines.jpg");
+      background-size: cover;
+      background-position: center;
+    }
+
+    body.dark-theme .bg-wireframe {
+      background-color: #080E1E;
+      background-image: 
+        radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.08) 0%, transparent 70%),
+        radial-gradient(circle, rgba(229, 195, 150, 0.06) 1px, transparent 1px);
+      background-size: cover, 20px 20px;
+    }
+
+    /* 3D Isometric Viewport */
+    .deck-viewport {
+      perspective: 920px;
+      perspective-origin: 50% 25%;
+    }
+
+    .deck-surface {
+      transform-style: preserve-3d;
+      transform: rotateX(50deg) rotateZ(-30deg) scale(0.96);
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+      background-size: 14px 14px;
+    }
+
+    .deck-surface.flat-mode {
+      transform: rotateX(0deg) rotateZ(0deg) scale(0.98);
+    }
+
+    @media (max-width: 380px) {
+      .deck-surface {
+        transform: rotateX(50deg) rotateZ(-30deg) scale(0.86);
+      }
+      .deck-surface.flat-mode {
+        transform: rotateX(0deg) rotateZ(0deg) scale(0.90);
+      }
+    }
+
+    /* 3D Extruded Stall Blocks */
+    .stall-block {
+      transform-style: preserve-3d;
+      transform: translateZ(8px);
+      box-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.7);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .stall-block:hover, .stall-block:active {
+      transform: translateZ(16px) scale(1.08);
+    }
+
+    /* 3D Deck Independent Light/Dark Mode Classes */
+    .deck-container-dark {
+      background-color: #060A14 !important;
+      border-color: #1E293B !important;
+    }
+    .deck-container-dark .deck-surface {
+      background-color: #0D131F !important;
+      border-color: rgba(51, 65, 85, 0.7) !important;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px) !important;
+    }
+    .deck-container-dark .deck-aisle {
+      border-color: rgba(229, 195, 150, 0.35) !important;
+      color: #94A3B8 !important;
+    }
+    .deck-container-dark .deck-legend {
+      background-color: rgba(15, 23, 42, 0.9) !important;
+      border-color: #1E293B !important;
+      color: #CBD5E1 !important;
+    }
+    .deck-container-dark #levelSwitcher {
+      background-color: rgba(15, 23, 42, 0.94) !important;
+      border-color: #334155 !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6) !important;
+    }
+    .deck-container-dark #deckLevelDesc {
+      color: #CBD5E1 !important;
+    }
+
+    .deck-container-light {
+      background-color: #EFE9DF !important;
+      border-color: #D8CFBF !important;
+    }
+    .deck-container-light .deck-surface {
+      background-color: #E2DDD4 !important;
+      border-color: #C5BAA7 !important;
+      background-image: radial-gradient(circle, rgba(166, 138, 100, 0.25) 1px, transparent 1px) !important;
+    }
+    .deck-container-light .deck-aisle {
+      border-color: rgba(154, 98, 53, 0.45) !important;
+      color: #475569 !important;
+    }
+    .deck-container-light .deck-legend {
+      background-color: rgba(250, 247, 242, 0.95) !important;
+      border-color: #D8CFBF !important;
+      color: #334155 !important;
+    }
+    .deck-container-light #levelSwitcher {
+      background-color: rgba(255, 255, 255, 0.96) !important;
+      border-color: #D8CFBF !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12) !important;
+    }
+    .deck-container-light #deckLevelDesc {
+      color: #1E293B !important;
+      font-weight: 700 !important;
+    }
+
+    /* Theme Card Styling */
+    .theme-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-card);
+      box-shadow: var(--shadow-card);
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Animated live pulse */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(5, 223, 114, 0.6); }
+      70% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 0 6px rgba(5, 223, 114, 0); }
+      100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(5, 223, 114, 0); }
+    }
+    .pulse-dot {
+      animation: pulse-ring 1.8s infinite;
+    }
+
+    /* Real-Time Ticking Animation Styles */
+    @keyframes stall-event-pulse {
+      0% { transform: scale(1); filter: brightness(1); }
+      30% { transform: scale(1.22); filter: brightness(1.75); box-shadow: 0 0 16px rgba(255, 255, 255, 0.95); z-index: 20; }
+      60% { transform: scale(1.08); filter: brightness(1.3); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+    .stall-transitioning {
+      animation: stall-event-pulse 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      position: relative;
+      z-index: 20;
+    }
+    @keyframes kpi-num-flash {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.22); color: #D4AF37; }
+      100% { transform: scale(1); }
+    }
+    .kpi-tick-flash {
+      animation: kpi-num-flash 0.8s ease-out;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex justify-center selection:bg-amber-600 selection:text-white">
+
+  <!-- Mobile Outer Shell Container (Max 440px authentic smartphone layout) -->
+  <div class="w-full max-w-[440px] min-h-screen flex flex-col justify-between bg-wireframe relative shadow-2xl overflow-x-hidden border-x" style="border-color: var(--border-card);">
+
+    <!-- ====================================================================
+         PAGE 1: TOWNSHIP SELECTOR (With Luxury Theme Switcher & Photos)
+         ==================================================================== -->
+    <div id="pageTownshipSelect" class="flex-1 flex flex-col p-4 space-y-4">
+      
+      <!-- Top Brand Header with Theme Switcher -->
+      <header class="pt-2 flex items-center justify-between border-b pb-3" style="border-color: var(--border-card);">
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 rounded-full bg-emerald-500 pulse-dot"></div>
+          <span class="font-serif font-black text-sm tracking-widest uppercase" style="color: var(--accent-gold);">VACANTI DRIVER</span>
+        </div>
+
+        <!-- Light / Dark Theme Switch Button -->
+        <div class="flex items-center space-x-2">
+          <div class="flex items-center rounded-full p-0.5 border text-[11px] font-bold" style="background-color: var(--bg-card); border-color: var(--border-card);">
+            <button onclick="setTheme('light')" id="btnThemeLight" class="px-2.5 py-1 rounded-full flex items-center space-x-1 transition-all" title="Light: Rich Beige-Gold">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+              </svg>
+              <span>Light</span>
+            </button>
+            <button onclick="setTheme('dark')" id="btnThemeDark" class="px-2.5 py-1 rounded-full flex items-center space-x-1 transition-all" title="Dark: Rich Navy-Blue">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              </svg>
+              <span>Dark</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Welcome Banner with Dynamic Time Greeting -->
+      <div class="text-center space-y-1.5 pt-1">
+        <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full border text-xs font-bold shadow-sm" style="background-color: var(--accent-badge-bg); border-color: var(--border-accent); color: var(--accent-gold);">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+          <span id="heroGreetingText">Good afternoon!</span>
+          <span class="text-slate-400">·</span>
+          <span id="selectScreenPstClock" class="font-mono">--:--:-- PST</span>
+        </div>
+        <h1 class="font-serif font-black text-2xl sm:text-3xl tracking-tight leading-tight" style="color: var(--accent-gold);">
+          Choose Destination Township
+        </h1>
+        <p class="text-xs max-w-xs mx-auto leading-relaxed" style="color: var(--text-secondary);">
+          Select a Megaworld property to view real-time multi-level parking availability and verified tariffs.
+        </p>
+      </div>
+
+      <!-- Township Photo Cards Stack -->
+      <div class="space-y-3.5 pt-1 flex-1">
+        
+        <!-- Card 1: Venice Grand Canal Mall -->
+        <div onclick="handleTownshipClick('venice')" class="group relative rounded-3xl overflow-hidden cursor-pointer border shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 h-44 flex flex-col justify-between p-4 bg-slate-900" style="border-color: var(--border-card);">
+          <img id="img-venice" src="assets/thumb_venice.jpg" alt="Venice Grand Canal Mall" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-75" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
+
+          <!-- Top tags -->
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-200 border border-amber-300/30 shadow-sm">Taguig · McKinley Hill</span>
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-emerald-400 border border-emerald-400/40 flex items-center space-x-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+              <span>● Live Status</span>
+            </span>
+          </div>
+
+          <!-- Bottom info -->
+          <div class="relative z-10">
+            <h2 class="font-serif font-black text-lg text-white drop-shadow-md">Venice Grand Canal Mall</h2>
+            <div class="flex items-center justify-between text-[11px] font-bold text-slate-200 pt-1.5 mt-1 border-t border-white/15">
+              <span class="text-amber-200">Decks: 4F, B1, B2</span>
+              <span class="text-white bg-black/75 px-2 py-0.5 rounded-md border border-white/15 shadow">₱50 flat 3h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Uptown Mall -->
+        <div onclick="handleTownshipClick('uptown')" class="group relative rounded-3xl overflow-hidden cursor-pointer border shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 h-44 flex flex-col justify-between p-4 bg-slate-900" style="border-color: var(--border-card);">
+          <img id="img-uptown" src="assets/thumb_uptown.jpg" alt="Uptown Mall" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-75" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
+
+          <!-- Top tags -->
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-200 border border-amber-300/30 shadow-sm">BGC · Uptown Bonifacio</span>
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-emerald-400 border border-emerald-400/40 flex items-center space-x-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+              <span>● Live Status</span>
+            </span>
+          </div>
+
+          <!-- Bottom info -->
+          <div class="relative z-10">
+            <h2 class="font-serif font-black text-lg text-white drop-shadow-md">Uptown Mall</h2>
+            <div class="flex items-center justify-between text-[11px] font-bold text-slate-200 pt-1.5 mt-1 border-t border-white/15">
+              <span class="text-amber-200">Decks: B1, B2, B3</span>
+              <span class="text-white bg-black/75 px-2 py-0.5 rounded-md border border-white/15 shadow">₱50 flat 3h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Eastwood Mall -->
+        <div onclick="handleTownshipClick('eastwood')" class="group relative rounded-3xl overflow-hidden cursor-pointer border shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 h-44 flex flex-col justify-between p-4 bg-slate-900" style="border-color: var(--border-card);">
+          <img id="img-eastwood" src="assets/thumb_eastwood.jpg" alt="Eastwood Mall" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-75" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
+
+          <!-- Top tags -->
+          <div class="relative z-10 flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-200 border border-amber-300/30 shadow-sm">Quezon City · Eastwood City</span>
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-emerald-400 border border-emerald-400/40 flex items-center space-x-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+              <span>● Live Status</span>
+            </span>
+          </div>
+
+          <!-- Bottom info -->
+          <div class="relative z-10">
+            <h2 class="font-serif font-black text-lg text-white drop-shadow-md">Eastwood Mall</h2>
+            <div class="flex items-center justify-between text-[11px] font-bold text-slate-200 pt-1.5 mt-1 border-t border-white/15">
+              <span class="text-amber-200">Decks: B1, B2, B3</span>
+              <span class="text-white bg-black/75 px-2 py-0.5 rounded-md border border-white/15 shadow">₱60 weekend flat</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Guarantees -->
+      <footer class="pt-3 pb-1 text-center text-xs space-y-1 font-medium border-t" style="border-color: var(--border-card); color: var(--text-secondary);">
+        <p class="flex items-center justify-center space-x-1.5">
+          <span class="text-emerald-600 font-bold">✓</span>
+          <span>Tier A Verified Megaworld Parking Tariff Rates</span>
+        </p>
+        <p class="flex items-center justify-center space-x-1.5">
+          <span class="text-emerald-600 font-bold">✓</span>
+          <span>15-Minute Free Drop-off / Pick-up Grace Window</span>
+        </p>
+      </footer>
+    </div>
+
+
+    <!-- ====================================================================
+         STEP 2: POP-UP NOTICE (Bolded Highlights & Matching Header Colors)
+         ==================================================================== -->
+    <div id="tariffModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div class="theme-card rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative border" style="border-color: var(--border-accent);">
+        
+        <!-- Header with Close Button -->
+        <div class="flex items-start justify-between pr-1">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider" style="color: var(--accent-champagne);">General Information & Tariffs</span>
+            <h3 id="modalTownshipTitle" class="font-serif font-black text-lg text-slate-900 mt-0.5" style="color: var(--text-primary);">Venice Grand Canal Mall</h3>
+          </div>
+          <button onclick="document.getElementById('tariffModal').classList.add('hidden')" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center text-sm font-bold transition-colors" style="color: var(--text-primary);">
+            &times;
+          </button>
+        </div>
+
+        <!-- 2-COLUMN LINE-BY-LINE BULLETS (Matching Gold Colors & Bolded Highlights) -->
+        <div class="grid grid-cols-2 gap-2.5 text-[11px] font-mono pt-1">
+          
+          <!-- Column 1: Rates & Official Tariffs -->
+          <div class="rounded-2xl p-3 space-y-2 border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+            <span class="block text-[10px] font-bold uppercase tracking-wider border-b pb-1" style="color: var(--accent-gold); border-color: var(--border-card);">OFFICIAL TARIFFS</span>
+            <ul id="colTariffList" class="space-y-1.5 leading-tight" style="color: var(--text-secondary);">
+              <!-- Rendered via JS with bold highlights -->
+            </ul>
+          </div>
+
+          <!-- Column 2: Facility & Rules (Matching same color as Official Tariffs) -->
+          <div class="rounded-2xl p-3 space-y-2 border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+            <span class="block text-[10px] font-bold uppercase tracking-wider border-b pb-1" style="color: var(--accent-gold); border-color: var(--border-card);">FACILITY RULES</span>
+            <ul id="colFacilityList" class="space-y-1.5 leading-tight" style="color: var(--text-secondary);">
+              <!-- Rendered via JS with bold highlights -->
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Direct Proceed Action to Step 3 -->
+        <button onclick="proceedToLiveStatus()" class="w-full py-3.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-serif font-black text-xs uppercase tracking-wider active:scale-95 transition-all shadow-lg">
+          Proceed to Live Deck Map &rarr;
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ====================================================================
+         PAGE 3: LIVE OCCUPANCY & AI PREDICTIVE AVAILABILITY DASHBOARD
+         ==================================================================== -->
+    <div id="pageLiveStatus" class="hidden flex-1 flex flex-col pb-20">
+      
+      <!-- Sub-bar: Location Tag & Guidelines Button -->
+      <div class="px-4 py-2.5 border-b flex items-center justify-between sticky top-0 z-30 backdrop-blur-md" style="background-color: var(--bg-card); border-color: var(--border-card);">
+        <div class="flex items-center space-x-2">
+          <button onclick="backToTownshipSelect()" class="text-xs font-bold hover:underline flex items-center space-x-1" style="color: var(--accent-gold);">
+            <span>←</span>
+          </button>
+          <svg class="w-4 h-4" style="color: var(--accent-gold);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span id="townshipLocationTag" class="text-xs font-bold" style="color: var(--text-primary);">McKinley Hill, Taguig</span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Guidelines & Rates button -->
+          <button onclick="document.getElementById('tariffModal').classList.remove('hidden')" class="text-xs font-bold flex items-center space-x-1.5 px-3 py-1 rounded-full border shadow-sm active:scale-95 transition-transform" style="background-color: var(--accent-badge-bg); border-color: var(--border-accent); color: var(--accent-gold);">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Guidelines & Rates</span>
+          </button>
+
+          <!-- Quick Theme Toggle in Subbar -->
+          <button onclick="toggleThemeQuick()" class="w-7 h-7 rounded-full border flex items-center justify-center transition-colors" style="background-color: var(--bg-card); border-color: var(--border-card); color: var(--text-secondary);" title="Toggle App Theme (Light / Dark)">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Content Flow -->
+      <div class="p-3.5 space-y-3 flex-1 flex flex-col">
+        
+        <!-- CARD 1: TEMPORAL OCCUPANCY SIMULATOR -->
+        <div class="theme-card rounded-2xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-lg border flex items-center justify-center" style="background-color: var(--accent-badge-bg); border-color: var(--border-accent); color: var(--accent-gold);">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-xs font-black uppercase tracking-wider" style="color: var(--accent-gold);">Temporal Occupancy Simulator</h4>
+                <p class="text-[10px] font-medium" style="color: var(--text-muted);">AI Diurnal Prediction & Influx Model</p>
+              </div>
+            </div>
+
+            <!-- LIVE PST Reset Button -->
+            <button onclick="resetToRealTimePst()" class="text-xs font-bold px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-all active:scale-95 shadow-sm flex items-center space-x-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-white pulse-dot"></span>
+              <span>● LIVE PST</span>
+            </button>
+          </div>
+
+          <!-- Exact Date & Exact Time Pickers Side-by-Side (High Contrast in both Light & Dark) -->
+          <div class="grid grid-cols-2 gap-2 pt-1 border-t" style="border-color: var(--border-card);">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider mb-1" style="color: var(--text-muted);">DATE (PST)</label>
+              <input type="date" id="deckDatePicker" onchange="onDateOrTimeChanged()" class="w-full font-bold text-xs rounded-xl px-2.5 py-2 border focus:outline-none cursor-pointer shadow-inner" style="background-color: var(--bg-input); border-color: var(--border-card);" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider mb-1" style="color: var(--text-muted);">TIME (24-HR)</label>
+              <input type="time" id="deckTimePicker" onchange="onDateOrTimeChanged()" class="w-full font-mono font-bold text-xs rounded-xl px-2.5 py-2 border focus:outline-none cursor-pointer shadow-inner" style="background-color: var(--bg-input); border-color: var(--border-card);" />
+            </div>
+          </div>
+
+          <!-- Simulation Status Indicator Line -->
+          <div class="flex items-center justify-between pt-1 border-t text-[11px]" style="border-color: var(--border-card); color: var(--text-muted);">
+            <span>Operational Mode:</span>
+            <span id="simulationStatusText" class="font-bold text-emerald-600 uppercase">Live Real-Time PST (Live 3D Deck Active)</span>
+          </div>
+
+          <!-- Holiday & Event Alerts (Dynamic) -->
+          <div id="holidayAlertBanner" class="hidden text-[11px] font-bold px-3 py-1.5 rounded-xl border bg-amber-500/15 border-amber-500/40 text-amber-600 dark:text-amber-400">
+            <span id="holidayBannerText">Philippine National Holiday Active (+35% Surge)</span>
+          </div>
+          <div id="eventAlertBanner" class="hidden text-[11px] font-bold px-3 py-1.5 rounded-xl border bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400">
+            <span id="eventBannerText">Megaworld Event Active (+45% Influx)</span>
+          </div>
+        </div>
+
+        <!-- MODE SWITCHER PILL -->
+        <div class="flex items-center justify-between p-1 rounded-2xl border" style="background-color: var(--bg-card); border-color: var(--border-card);">
+          <button onclick="setDashboardMode('live')" id="btnModeLive" class="w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 bg-emerald-600 text-white shadow-sm font-black">
+            <span class="w-2 h-2 rounded-full bg-white pulse-dot"></span>
+            <span>Live 3D Deck Map</span>
+          </button>
+          <button onclick="setDashboardMode('forecast')" id="btnModeForecast" class="w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            </svg>
+            <span>Predictive Availability</span>
+          </button>
+        </div>
+
+
+        <!-- ====================================================================
+             VIEW A: CURRENT LIVE 3D DECK MAP (Active when at Live PST)
+             ==================================================================== -->
+        <div id="sectionLiveDeckView" class="space-y-3">
+          
+          <!-- DIURNAL RUSH BANNER (Live) -->
+          <div class="theme-card rounded-2xl p-3 flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-xl border flex items-center justify-center flex-shrink-0" style="background-color: var(--accent-badge-bg); border-color: var(--border-accent); color: var(--accent-gold);">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div>
+              <h5 id="rushTitle" class="text-xs font-black uppercase tracking-wider" style="color: var(--text-primary);">MORNING COMMUTER RUSH (7:00 AM - 10:00 AM)</h5>
+              <p id="rushDesc" class="text-[10px] leading-tight mt-0.5" style="color: var(--text-muted);">High corporate influx. Multi-deck upper levels filling up for day parking.</p>
+            </div>
+          </div>
+
+          <!-- 4-CARD KPI STRIP (Strictly matching live 24 stalls) -->
+          <div class="grid grid-cols-4 gap-2">
+            <!-- Card 1: FREE -->
+            <div class="theme-card rounded-2xl p-2.5 text-center">
+              <span class="text-[10.5px] uppercase font-bold tracking-wider" style="color: var(--text-muted);">FREE</span>
+              <p id="kpiFree" class="text-xl sm:text-2xl font-black text-emerald-500">11</p>
+            </div>
+
+            <!-- Card 2: OCCUPIED -->
+            <div class="theme-card rounded-2xl p-2.5 text-center">
+              <span class="text-[10.5px] uppercase font-bold tracking-wider" style="color: var(--text-muted);">OCCUPIED</span>
+              <p id="kpiOccupied" class="text-xl sm:text-2xl font-black text-rose-500">9</p>
+            </div>
+
+            <!-- Card 3: GRACE 15M -->
+            <div class="theme-card rounded-2xl p-2.5 text-center">
+              <span class="text-[10.5px] uppercase font-bold tracking-wider" style="color: var(--text-muted);">GRACE 15M</span>
+              <p id="kpiGrace" class="text-xl sm:text-2xl font-black text-sky-500">4</p>
+            </div>
+
+            <!-- Card 4: LOAD -->
+            <div class="theme-card rounded-2xl p-2.5 text-center">
+              <span class="text-[10.5px] uppercase font-bold tracking-wider" style="color: var(--text-muted);">LOAD</span>
+              <p id="kpiLoad" class="text-xl sm:text-2xl font-black" style="color: var(--accent-gold);">54%</p>
+            </div>
+          </div>
+
+          <!-- 3D PERSPECTIVE LIVE DECK MAP (With Independent Deck Theme Switcher) -->
+          <div id="deckMainContainer" class="deck-container-dark relative w-full h-[330px] rounded-3xl border-2 shadow-2xl overflow-hidden flex flex-col justify-between p-3.5 transition-all duration-300">
+            
+            <!-- Top Watermark & Controls: Floor Badge + Deck Theme Switch + 3D Toggle -->
+            <div class="flex justify-between items-center z-10 pointer-events-none">
+              <div class="flex items-center space-x-2 pointer-events-auto">
+                <span id="activeFloorBadge" class="font-mono font-bold text-xs px-2.5 py-1 rounded-lg bg-slate-800/90 text-white border border-slate-700 shadow-sm">
+                  LEVEL 4F
+                </span>
+                <span id="deckLevelDesc" class="text-xs text-slate-300 font-medium">
+                  Upper Deck Open Bays
+                </span>
+              </div>
+
+              <!-- Deck Theme Switcher & 3D Toggle -->
+              <div class="flex items-center space-x-1.5 pointer-events-auto">
+                <!-- Dedicated 3D Deck Light/Dark Mode Switch -->
+                <button onclick="toggleDeckTheme()" id="btnDeckTheme" class="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700 text-xs font-mono font-bold text-amber-300 hover:text-white active:scale-95 transition-all shadow-sm flex items-center space-x-1" title="Toggle 3D Deck Lighting (Light/Dark)">
+                  <span id="deckThemeIcon">☀</span>
+                  <span id="deckThemeLabel">Deck Light</span>
+                </button>
+
+                <!-- 3D/2D Toggle -->
+                <button onclick="toggle3D()" class="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700 text-xs font-mono font-bold text-white hover:text-amber-400 active:scale-95 transition-all shadow-sm">
+                  <span id="toggle3DLabel">3D</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Google Maps-Style Parking Level Switcher (Vertical Floating Floor Pill Card) -->
+            <div id="levelSwitcher" class="absolute left-3.5 top-1/2 -translate-y-1/2 z-20 w-11 rounded-2xl py-2 px-1 flex flex-col space-y-1.5 items-center text-xs font-bold border transition-all">
+              <!-- Dynamically populated via renderLevelSwitcher() -->
+            </div>
+
+            <!-- 3D Viewport Deck Canvas -->
+            <div class="deck-viewport w-full h-full absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div id="deckSurface" class="deck-surface pointer-events-auto relative w-[285px] sm:w-[305px] h-[230px] rounded-2xl p-3 shadow-[0_25px_60px_rgba(0,0,0,0.95)] flex flex-col justify-between border">
+                
+                <!-- TOP BANK: 2 Rows of 6 Stalls (Bays 1-6 & 7-12) -->
+                <div class="space-y-1.5">
+                  <div id="row1Stalls" class="grid grid-cols-6 gap-1.5">
+                    <!-- Bays 1 to 6 -->
+                  </div>
+                  <div id="row2Stalls" class="grid grid-cols-6 gap-1.5">
+                    <!-- Bays 7 to 12 -->
+                  </div>
+                </div>
+
+                <!-- CENTRAL DRIVE AISLE (ENTRY &rarr; / ONE WAY &rarr; / &rarr; EXIT) -->
+                <div class="deck-aisle h-8 border-y border-dashed flex items-center justify-between px-2.5 pointer-events-none my-0.5 transition-colors">
+                  <div class="flex items-center space-x-1 text-[8px] font-mono font-bold tracking-wider">
+                    <span class="w-3 h-2 rounded-sm border border-current opacity-70"></span>
+                    <span>ENTRY &rarr;</span>
+                  </div>
+                  <span class="text-[8px] font-mono font-bold tracking-widest">ONE WAY &rarr;</span>
+                  <span class="text-[8px] font-mono font-bold">&rarr; EXIT</span>
+                </div>
+
+                <!-- BOTTOM BANK: 2 Rows of 6 Stalls (Bays 13-18 & 19-24) -->
+                <div class="space-y-1.5">
+                  <div id="row3Stalls" class="grid grid-cols-6 gap-1.5">
+                    <!-- Bays 13 to 18 -->
+                  </div>
+                  <div id="row4Stalls" class="grid grid-cols-6 gap-1.5">
+                    <!-- Bays 19 to 24 -->
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Bottom Legend & Live Telemetry Stream Bar -->
+            <div class="flex justify-between items-center z-10 pointer-events-none">
+              <!-- Live Stream Status Pill -->
+              <div id="liveStreamBadge" class="deck-legend pointer-events-auto backdrop-blur-md px-2.5 py-1.5 rounded-full border text-[10px] font-mono font-semibold flex items-center space-x-1.5 shadow-lg transition-colors">
+                <span id="liveStreamDot" class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+                <span id="liveStreamLabel" class="tracking-wider uppercase font-bold text-emerald-600 dark:text-emerald-400">STREAM ACTIVE</span>
+              </div>
+
+              <!-- Legend (Free / Occupied / Grace) -->
+              <div class="deck-legend pointer-events-auto backdrop-blur-md px-3 py-1.5 rounded-full border text-[11px] font-mono font-semibold flex items-center space-x-3 shadow-lg transition-colors">
+                <span class="flex items-center space-x-1.5">
+                  <span class="w-2.5 h-2.5 rounded-sm bg-[#05DF72]"></span>
+                  <span>Free</span>
+                </span>
+                <span class="flex items-center space-x-1.5">
+                  <span class="w-2.5 h-2.5 rounded-sm bg-[#FF4242]"></span>
+                  <span>Occupied</span>
+                </span>
+                <span class="flex items-center space-x-1.5">
+                  <span class="w-2.5 h-2.5 rounded-sm bg-[#00D0FF]"></span>
+                  <span>Grace</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BAY DETAIL INSPECTION BOTTOM SHEET -->
+          <div id="bayInspectorSheet" class="hidden theme-card rounded-2xl p-4 shadow-xl border space-y-3" style="border-color: var(--border-accent);">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider" style="color: var(--accent-champagne);">Live Bay Inspection Telemetry</span>
+                <h4 id="inspectSlotCode" class="font-serif font-black text-base text-slate-900 mt-0.5" style="color: var(--text-primary);">Bay 4F-08</h4>
+              </div>
+              <button onclick="document.getElementById('bayInspectorSheet').classList.add('hidden'); liveSimulation.inspectedStallId = null;" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-white px-2 py-1">
+                &times; Close
+              </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="p-2.5 rounded-xl border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Bay Status</span>
+                <p id="inspectStatus" class="font-bold text-emerald-600 mt-0.5">Available / Ready</p>
+              </div>
+              <div class="p-2.5 rounded-xl border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Registered Plate</span>
+                <p id="inspectPlate" class="font-mono font-bold mt-0.5" style="color: var(--text-primary);">--</p>
+              </div>
+              <div class="p-2.5 rounded-xl border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                <span class="text-[10px] uppercase font-bold text-slate-400">OCR Confidence</span>
+                <p id="inspectOcr" class="font-mono font-bold mt-0.5 text-sky-600">--</p>
+              </div>
+              <div class="p-2.5 rounded-xl border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Tariff State</span>
+                <p id="inspectTariff" class="font-bold mt-0.5" style="color: var(--text-primary);">--</p>
+              </div>
+            </div>
+
+            <p id="inspectNotice" class="text-[11px] leading-snug p-2.5 rounded-xl border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card); color: var(--text-secondary);">
+              Megaworld Smart Parking grants a 15-minute free egress grace window after kiosk settlement.
+            </p>
+          </div>
+
+        </div>
+
+
+        <!-- ====================================================================
+             VIEW B: PREDICTIVE AVAILABILITY (Active when Date/Time is in Future)
+             Exact Match to User Uploaded Screenshot (media_1789005679807.png)
+             ==================================================================== -->
+        <div id="sectionForecastView" class="hidden space-y-3">
+          
+          <!-- Section Title & Explainer -->
+          <div class="theme-card rounded-2xl p-4 space-y-3">
+            <div>
+              <h3 class="font-serif font-black text-lg text-slate-900" style="color: var(--text-primary);">Predictive Availability</h3>
+              <p class="text-xs mt-0.5 leading-relaxed" style="color: var(--text-muted);">
+                Select a parking zone to forecast availability for the selected date and time above.
+              </p>
+            </div>
+
+            <!-- Parking Zone Selector Dropdown (Exact Match to Screenshot) -->
+            <div>
+              <label class="block text-[10.5px] font-bold uppercase tracking-wider mb-1" style="color: var(--text-muted);">SELECT PARKING ZONE</label>
+              <select id="forecastZoneSelect" onchange="onForecastZoneChange()" class="w-full font-bold text-xs rounded-xl px-3 py-2.5 border focus:outline-none cursor-pointer shadow-inner" style="background-color: var(--bg-input); border-color: var(--border-card); color: var(--text-primary);">
+                <!-- Dynamically populated per township in JS -->
+              </select>
+            </div>
+
+            <!-- THE BIG PREDICTIVE FORECAST BANNER (Exact Match to media_1789005679807.png) -->
+            <div id="forecastMainBanner" class="rounded-2xl p-5 text-center border shadow-lg transition-all duration-300">
+              <div id="forecastBannerEyebrow" class="text-[11px] font-black uppercase tracking-widest font-mono mb-2">
+                FORECAST FOR THURSDAY, SEPTEMBER 10, 2026 · 09:53 AM
+              </div>
+              <div id="forecastBannerValue" class="font-serif font-black text-2xl sm:text-3xl tracking-tight text-white drop-shadow">
+                Uncertain — may be tight
+              </div>
+            </div>
+
+            <!-- 3 MODEL METRIC CARDS (from Tab 2 of app.py) -->
+            <div class="grid grid-cols-3 gap-2 pt-1">
+              <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Baseline</span>
+                <p id="predBaseline" class="text-base font-black font-mono mt-0.5 text-slate-800 dark:text-slate-200">48%</p>
+                <span class="text-[9px] text-slate-500">Historical Avg</span>
+              </div>
+              <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                <span class="text-[10px] uppercase font-bold text-slate-400">ML Model</span>
+                <p id="predTrained" class="text-base font-black font-mono mt-0.5 text-sky-500">56%</p>
+                <span class="text-[9px] text-slate-500">Gradient-Boost</span>
+              </div>
+              <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Adjusted</span>
+                <p id="predAdjusted" class="text-base font-black font-mono mt-0.5" style="color: var(--accent-gold);">59%</p>
+                <span class="text-[9px] text-slate-500">Safety Margin</span>
+              </div>
+            </div>
+
+            <!-- EXTERNAL TELEMETRY SIGNALS (from Tab 2 of app.py) -->
+            <div class="grid grid-cols-3 gap-2 pt-1">
+              <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Foot-Traffic</span>
+                <p id="predBusyness" class="text-xs font-black font-mono mt-0.5 text-slate-800 dark:text-slate-200">65 / 100</p>
+                <span class="text-[9px] text-slate-500">Popular Times</span>
+              </div>
+              <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Weather</span>
+                <p id="predWeather" class="text-xs font-black font-mono mt-0.5 text-slate-800 dark:text-slate-200">29°C</p>
+                <span id="predWeatherSub" class="text-[9px] text-slate-500">Partly Cloudy</span>
+              </div>
+              <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Road Delay</span>
+                <p id="predDelay" class="text-xs font-black font-mono mt-0.5 text-amber-500">+8 mins</p>
+                <span id="predDelaySub" class="text-[9px] text-slate-500">Moderate Flow</span>
+              </div>
+            </div>
+
+            <!-- Quick Switch to Live Deck Action -->
+            <button onclick="resetToRealTimePst()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider active:scale-95 transition-all shadow-md flex items-center justify-center space-x-2">
+              <span class="w-2 h-2 rounded-full bg-white pulse-dot"></span>
+              <span>● View Current Live 3D Deck Map &rarr;</span>
+            </button>
+          </div>
+
+        </div>
+
+
+        <!-- CARD 5: PLAN ARRIVAL & CALCULATE TARIFF -->
+        <div onclick="openFeeCalculator()" class="theme-card rounded-2xl p-4 cursor-pointer hover:border-amber-400/50 active:scale-[0.99] transition-all flex items-center justify-between shadow-md">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-xl border flex items-center justify-center flex-shrink-0" style="background-color: var(--accent-badge-bg); border-color: var(--border-accent); color: var(--accent-gold);">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+            </div>
+            <div>
+              <h5 class="text-xs font-black uppercase tracking-wider" style="color: var(--text-primary);">Plan Arrival & Calculate Tariff</h5>
+              <p class="text-[10px]" style="color: var(--text-muted);">Verified Tier A Megaworld Tariff Estimator</p>
+            </div>
+          </div>
+
+          <span class="text-xs font-black hover:underline" style="color: var(--accent-gold);">Open Estimator &rarr;</span>
+        </div>
+
+      </div>
+
+      <!-- FEE CALCULATOR MODAL / DRAWER -->
+      <div id="calcModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="theme-card rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative border" style="border-color: var(--border-accent);">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider" style="color: var(--accent-champagne);">Official Tariff Engine</span>
+              <h3 class="font-serif font-black text-lg text-slate-900 mt-0.5" style="color: var(--text-primary);">Dynamic Fee Calculator</h3>
+            </div>
+            <button onclick="document.getElementById('calcModal').classList.add('hidden')" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center text-sm font-bold transition-colors" style="color: var(--text-primary);">
+              &times;
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider mb-1" style="color: var(--text-muted);">ARRIVAL TIME</label>
+              <input type="time" id="calcTime" onchange="computeFee()" class="w-full font-mono font-bold text-xs rounded-xl p-2.5 border focus:outline-none" style="background-color: var(--bg-input); border-color: var(--border-card);" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1">
+                <span style="color: var(--text-secondary);">Duration of Stay:</span>
+                <span id="durationLabel" style="color: var(--accent-gold);">3 Hours (Base)</span>
+              </div>
+              <input type="range" id="calcDuration" min="1" max="10" step="1" value="3" oninput="computeFee()" class="w-full accent-amber-600 h-2 rounded-lg cursor-pointer bg-slate-200 dark:bg-slate-800" />
+              <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>1h</span>
+                <span>3h (Base)</span>
+                <span>7h (Tier step)</span>
+                <span>10h</span>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl border space-y-2" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
+              <div class="flex justify-between items-baseline border-b pb-2" style="border-color: var(--border-card);">
+                <span class="text-xs uppercase font-bold" style="color: var(--text-muted);">ESTIMATED TOTAL</span>
+                <span id="calcTotalDisplay" class="font-serif font-black text-2xl" style="color: var(--accent-gold);">₱50.00</span>
+              </div>
+              <div class="text-[11px] space-y-1 font-mono" style="color: var(--text-secondary);">
+                <div class="flex justify-between">
+                  <span>Base Tariff (First 3 hrs):</span>
+                  <span id="calcBreakdownBase" class="font-bold" style="color: var(--text-primary);">₱50.00</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Succeeding Hours:</span>
+                  <span id="calcBreakdownSucceeding" class="font-bold" style="color: var(--text-primary);">₱0.00</span>
+                </div>
+                <div class="flex justify-between text-sky-600 dark:text-sky-400 font-bold">
+                  <span>15-Min Free Grace:</span>
+                  <span>Active</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="calcTariffRuleNote" class="text-[11px] p-2.5 rounded-xl border leading-relaxed font-medium" style="background-color: var(--bg-card-subtle); border-color: var(--border-card); color: var(--text-secondary);">
+              <!-- Rule note injected by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- JAVASCRIPT SYSTEM ENGINE (Backed by parking.db, predictor.py, revenue_engine.py & real_data_pipeline.py) -->
+  <script>
+    /* ==========================================================================
+       1. BACKEND PIPELINE RESOLUTION & DATA MODEL BINDING
+       ========================================================================== */
+    const BACKEND = (typeof window !== 'undefined' && window.BACKEND_DATA) ? window.BACKEND_DATA : null;
+
+    // 1.1 Verified Townships & Official Tariffs (Backed by revenue_config.py & parking.db)
+    const TOWNSHIPS = (BACKEND && BACKEND.townships) ? BACKEND.townships : {
+      venice: {
+        siteId: 3,
+        siteName: "McKinley Hill",
+        name: "Venice Grand Canal Mall",
+        location: "McKinley Hill, Taguig",
+        sub: "McKinley Hill, Taguig City",
+        levels: ["4F", "B1", "B2"],
+        defaultLevel: "4F",
+        zoneIdMap: { "4F": 7, "B1": 8, "B2": 9 },
+        levelMeta: {
+          "4F": { desc: "Upper Deck Open Bays", zoneType: "mall", zoneId: 7, fullZoneName: "Venice Grand Canal Mall — Upper Deck 4F (McKinley Hill)" },
+          "B1": { desc: "Mall Retail & Office Bays", zoneType: "office", zoneId: 8, fullZoneName: "Commerce & Industry Plaza — Level B1 (McKinley Hill)" },
+          "B2": { desc: "Lower Basement Bays", zoneType: "residential", zoneId: 9, fullZoneName: "Viceroy & Morgan Deck — Level B2 (McKinley Hill)" }
+        },
+        tariffs: { first_3hr_flat: 50, succeeding_hr: 20, overnight_surcharge: 150, grace_period_mins: 15 },
+        bulletsCol1: [
+          "• <b>₱50.00</b> First 3 hrs (Base)",
+          "• <b>₱20.00</b> Each succeeding hr",
+          "• <b>₱150.00</b> Overnight surcharge",
+          "• <b>Cutoff:</b> 12MN in / 12NN out",
+          "• <b>Validation:</b> Verified at exit barrier"
+        ],
+        bulletsCol2: [
+          "• <b>15-Min Free</b> Drop-off grace",
+          "• <b>2.10m Max</b> height clearance",
+          "• <b>Level 4F</b> Open-Air deck open",
+          "• <b>Cashless:</b> GCash, Maya, RFID",
+          "• <b>Live Weather:</b> 28°C Partly Cloudy"
+        ]
+      },
+      uptown: {
+        siteId: 1,
+        siteName: "Uptown Bonifacio",
+        name: "Uptown Mall",
+        location: "Uptown Bonifacio, BGC",
+        sub: "Uptown Bonifacio, BGC",
+        levels: ["B1", "B2", "B3"],
+        defaultLevel: "B1",
+        zoneIdMap: { "B1": 1, "B2": 2, "B3": 3 },
+        levelMeta: {
+          "B1": { desc: "Mall Grand Wing", zoneType: "mall", zoneId: 1, fullZoneName: "Mall Grand Wing — Ground & Level 1 (Uptown Bonifacio)" },
+          "B2": { desc: "Corporate Tower Alpha", zoneType: "office", zoneId: 2, fullZoneName: "Office Tower Alpha — Level B2 (Uptown Bonifacio)" },
+          "B3": { desc: "Long-Stay Tenant Bays", zoneType: "residential", zoneId: 3, fullZoneName: "Residential Deck — Level B3 (Uptown Bonifacio)" }
+        },
+        tariffs: { first_3hr_flat: 50, "4th_to_7th_hr": 15, "7th_hr_plus_am": 100, "7th_hr_plus_pm": 30, overnight_surcharge: 200, grace_period_mins: 15 },
+        bulletsCol1: [
+          "• <b>₱50.00</b> First 3 hrs (Base)",
+          "• <b>₱15.00/hr</b> for 4th to 7th hr",
+          "• <b>₱100.00/hr</b> (AM entry 7h+)",
+          "• <b>₱30.00/hr</b> (PM entry 7h+)",
+          "• <b>₱200.00</b> Overnight charge"
+        ],
+        bulletsCol2: [
+          "• <b>15-Min</b> Drop-off grace period",
+          "• <b>2.05m</b> Basement height limit",
+          "• <b>Cinema wing</b> elevator in B1",
+          "• <b>Direct access:</b> The Island BGC",
+          "• <b>Live Weather:</b> 29°C Clear Sky"
+        ]
+      },
+      eastwood: {
+        siteId: 2,
+        siteName: "Eastwood City",
+        name: "Eastwood Mall",
+        location: "Eastwood City, Quezon City",
+        sub: "Eastwood City, Quezon City",
+        levels: ["B1", "B2", "B3"],
+        defaultLevel: "B1",
+        zoneIdMap: { "B1": 4, "B2": 5, "B3": 6 },
+        levelMeta: {
+          "B1": { desc: "Mall Main Plaza", zoneType: "mall", zoneId: 4, fullZoneName: "Mall Main Plaza — Citywalk & Plaza Level B1 (Eastwood City)" },
+          "B2": { desc: "Office Annex Cyberpark", zoneType: "office", zoneId: 5, fullZoneName: "Office Annex Deck — Level B2 (Eastwood City)" },
+          "B3": { desc: "Cinema & Lower Deck", zoneType: "residential", zoneId: 6, fullZoneName: "Residential Tower — Level B3 (Eastwood City)" }
+        },
+        tariffs: { first_3hr_flat: 60, succeeding_hr_weekday: 20, weekend_holiday_flat: 60, overnight_surcharge: 150, grace_period_mins: 15 },
+        bulletsCol1: [
+          "• <b>₱60.00 Flat</b> First 3 hrs",
+          "• <b>₱20.00</b> Succeeding (Weekday)",
+          "• <b>₱60.00 Flat</b> All Day (Weekends)",
+          "• <b>Statutory Holidays:</b> ₱60 Flat",
+          "• <b>₱150.00</b> Overnight fee"
+        ],
+        bulletsCol2: [
+          "• <b>15-Min Free</b> Drop-off grace",
+          "• <b>2.10m Max</b> height limit",
+          "• <b>Direct access:</b> Citywalk plaza",
+          "• <b>Automated pay</b> kiosk in B1",
+          "• <b>Live Weather:</b> 28°C Fair"
+        ]
+      }
+    };
+
+    // 1.2 Official Holidays (Backed by ph_holidays.py & holidays table)
+    const PH_HOLIDAYS_MAP = (BACKEND && BACKEND.holidays) ? BACKEND.holidays : {
+      "01-01": "New Year's Day",
+      "01-02": "Special Non-Working Day",
+      "02-25": "EDSA People Power Revolution",
+      "04-09": "Araw ng Kagitingan (Day of Valor)",
+      "05-01": "Labor Day",
+      "06-12": "Independence Day",
+      "08-21": "Ninoy Aquino Day",
+      "11-01": "All Saints' Day",
+      "11-02": "All Souls' Day",
+      "11-30": "Bonifacio Day",
+      "12-08": "Feast of the Immaculate Conception",
+      "12-24": "Christmas Eve",
+      "12-25": "Christmas Day",
+      "12-30": "Rizal Day",
+      "12-31": "New Year's Eve",
+      "2026-02-17": "Chinese New Year",
+      "2026-03-20": "Eidul Fitr",
+      "2026-04-02": "Maundy Thursday",
+      "2026-04-03": "Good Friday",
+      "2026-04-04": "Black Saturday",
+      "2026-05-27": "Eidul Adha",
+      "2026-08-31": "National Heroes Day"
+    };
+
+    // 1.3 Megaworld Events Registry (Backed by events table in parking.db & real_data_pipeline.py)
+    const EVENTS_REGISTRY = (BACKEND && BACKEND.events) ? BACKEND.events : [
+      {
+        siteKey: "venice",
+        title: "Venice Gondola Fest & Grand Weekend Sale",
+        start: "2026-08-28",
+        end: "2026-08-31",
+        factor: 1.45,
+        desc: "3-Day Holiday Weekend Sale with live acoustic performances and extended mall hours."
+      },
+      {
+        siteKey: "uptown",
+        title: "Uptown BGC Payday Midnight Madness",
+        start: "2026-08-29",
+        end: "2026-08-30",
+        factor: 1.35,
+        desc: "Late-night shopping, DJ sets at The Island, and cinema premiere screenings."
+      },
+      {
+        siteKey: "eastwood",
+        title: "Eastwood Citywalk Food & Beer Festival",
+        start: "2026-08-28",
+        end: "2026-08-30",
+        factor: 1.30,
+        desc: "Plaza street dining festival attracting evening corporate and family crowds."
+      }
+    ];
+
+    // 1.4 Google Places Popular Times Foot-Traffic Distributions
+    const GOOGLE_BUSYNESS_CURVES = (BACKEND && BACKEND.popular_times) ? BACKEND.popular_times : {
+      "Venice Grand Canal Mall": {
+        weekday: [0, 0, 0, 0, 0, 0, 0, 5, 12, 25, 45, 60, 55, 50, 58, 65, 75, 88, 92, 85, 60, 35, 15, 0],
+        friday:  [0, 0, 0, 0, 0, 0, 0, 5, 15, 30, 50, 68, 60, 58, 65, 78, 90, 98, 100, 95, 80, 55, 25, 5],
+        weekend: [0, 0, 0, 0, 0, 0, 0, 8, 20, 45, 70, 88, 85, 82, 89, 95, 100, 98, 96, 90, 75, 48, 20, 0]
+      },
+      "Mall Grand Wing": {
+        weekday: [0, 0, 0, 0, 0, 0, 0, 8, 18, 32, 52, 68, 62, 58, 64, 72, 84, 94, 95, 88, 68, 42, 18, 0],
+        friday:  [0, 0, 0, 0, 0, 0, 0, 8, 20, 38, 58, 75, 70, 68, 75, 86, 96, 100, 99, 94, 85, 60, 28, 5],
+        weekend: [0, 0, 0, 0, 0, 0, 0, 10, 25, 50, 75, 92, 90, 88, 94, 98, 100, 99, 95, 88, 72, 45, 20, 0]
+      },
+      "Mall Main Plaza": {
+        weekday: [0, 0, 0, 0, 0, 0, 0, 6, 15, 28, 48, 65, 58, 54, 60, 70, 82, 90, 91, 84, 62, 38, 15, 0],
+        friday:  [0, 0, 0, 0, 0, 0, 0, 6, 18, 35, 55, 72, 65, 62, 70, 82, 94, 98, 97, 90, 78, 52, 22, 5],
+        weekend: [0, 0, 0, 0, 0, 0, 0, 8, 22, 46, 72, 89, 86, 84, 90, 96, 98, 97, 92, 85, 68, 40, 18, 0]
+      }
+    };
+
+    // 1.5 Authentic ALPR Plate Reads from plate_reads & ticketing_records table in parking.db
+    const REAL_PLATES_DATA = (BACKEND && BACKEND.real_plates && BACKEND.real_plates.length > 0)
+      ? BACKEND.real_plates
+      : [
+          { plate: 'CWP8759', raw_ocr: 'CWP875S', confidence: 98.4 },
+          { plate: 'ZWW3481', raw_ocr: 'ZWW348I', confidence: 97.2 },
+          { plate: 'NDF-4821', raw_ocr: 'NDF-4821', confidence: 98.9 },
+          { plate: 'CAR-9082', raw_ocr: 'CAR-9082', confidence: 99.1 },
+          { plate: 'NGA-1033', raw_ocr: 'NGA-1033', confidence: 97.8 },
+          { plate: 'XAA-5920', raw_ocr: 'XAA-5920', confidence: 98.5 },
+          { plate: 'PQR-7711', raw_ocr: 'PQR-7711', confidence: 97.4 },
+          { plate: 'BGC-8842', raw_ocr: 'BGC-8842', confidence: 99.3 },
+          { plate: 'EWD-3310', raw_ocr: 'EWD-3310', confidence: 98.1 },
+          { plate: 'VIC-2026', raw_ocr: 'VIC-2026', confidence: 99.0 }
+        ];
+
+    const REALISTIC_PLATES_POOL = REAL_PLATES_DATA.map(p => p.plate);
+
+    // Global State
+    let currentTheme = 'light';
+    let currentDeckTheme = 'dark'; // Independent 3D Deck theme: 'dark' or 'light'
+    let selectedTownshipKey = 'venice';
+    let currentLevel = '4F';
+    let is3D = true;
+    let isRealTimeMode = true;
+    let activeDashboardMode = 'live'; // 'live' or 'forecast'
+
+    // Initial Date and Time
+    const initialNow = new Date();
+    let selectedDate = initialNow.toISOString().split('T')[0];
+    let selectedTime = initialNow.toTimeString().split(' ')[0].substring(0, 5);
+
+    // Stalls telemetry cache for clicked inspections
+    const currentStallDetails = {};
+
+    // Live Real-Time Ticking Simulation Engine State
+    const liveSimulation = {
+      initialized: false,
+      currentTownship: null,
+      currentLevel: null,
+      stalls: [],
+      secondsAccumulator: 0,
+      nextEventInterval: 5,
+      inspectedStallId: null
+    };
+
+    /* ==========================================================================
+       2. APP THEME & INDEPENDENT 3D DECK THEME CONTROLLERS
+       ========================================================================== */
+    function setTheme(mode) {
+      currentTheme = mode;
+      const btnLight = document.getElementById('btnThemeLight');
+      const btnDark = document.getElementById('btnThemeDark');
+
+      if (mode === 'dark') {
+        document.body.classList.add('dark-theme');
+        if (btnDark) {
+          btnDark.className = "px-2.5 py-1 rounded-full flex items-center space-x-1 transition-all bg-amber-600 text-white shadow-sm font-black";
+        }
+        if (btnLight) {
+          btnLight.className = "px-2.5 py-1 rounded-full flex items-center space-x-1 transition-all text-slate-400 hover:text-white font-medium";
+        }
+      } else {
+        document.body.classList.remove('dark-theme');
+        if (btnLight) {
+          btnLight.className = "px-2.5 py-1 rounded-full flex items-center space-x-1 transition-all bg-amber-700 text-white shadow-sm font-black";
+        }
+        if (btnDark) {
+          btnDark.className = "px-2.5 py-1 rounded-full flex items-center space-x-1 transition-all text-slate-500 hover:text-slate-900 font-medium";
+        }
+      }
+    }
+
+    function toggleThemeQuick() {
+      setTheme(currentTheme === 'light' ? 'dark' : 'light');
+    }
+
+    setTheme('light');
+
+    // INDEPENDENT 3D DECK THEME SWITCHER
+    function toggleDeckTheme() {
+      currentDeckTheme = (currentDeckTheme === 'dark') ? 'light' : 'dark';
+      applyDeckTheme();
+    }
+
+    function applyDeckTheme() {
+      const container = document.getElementById('deckMainContainer');
+      const label = document.getElementById('deckThemeLabel');
+      const icon = document.getElementById('deckThemeIcon');
+
+      if (currentDeckTheme === 'light') {
+        container.classList.remove('deck-container-dark');
+        container.classList.add('deck-container-light');
+        if (label) label.innerText = "Deck Dark";
+        if (icon) icon.innerText = "☾";
+      } else {
+        container.classList.remove('deck-container-light');
+        container.classList.add('deck-container-dark');
+        if (label) label.innerText = "Deck Light";
+        if (icon) icon.innerText = "☀";
+      }
+
+      // Re-render floor buttons and stalls to ensure optimal contrast
+      renderLevelSwitcher();
+      recalculateSimulation();
+    }
+
+    /* ==========================================================================
+       3. REAL-TIME CLOCK & TIME-DEPENDENT GREETING
+       ========================================================================== */
+    function updatePstClock() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour12: false });
+      const selectClock = document.getElementById('selectScreenPstClock');
+      if (selectClock) selectClock.innerText = `${timeString} PST`;
+
+      if (isRealTimeMode) {
+        selectedDate = now.toISOString().split('T')[0];
+        selectedTime = now.toTimeString().split(' ')[0].substring(0, 5);
+        const dateInput = document.getElementById('deckDatePicker');
+        const timeInput = document.getElementById('deckTimePicker');
+        if (dateInput && document.activeElement !== dateInput) dateInput.value = selectedDate;
+        if (timeInput && document.activeElement !== timeInput) timeInput.value = selectedTime;
+
+        // Execute Real-Time Live Ticking Simulation Engine
+        if (activeDashboardMode === 'live') {
+          tickLiveSimulationEngine();
+        }
+      }
+    }
+    setInterval(updatePstClock, 1000);
+    updatePstClock();
+
+    function updateGreeting(hour) {
+      const greetingEl = document.getElementById('heroGreetingText');
+      if (!greetingEl) return;
+      if (hour >= 5 && hour < 12) {
+        greetingEl.innerText = "Good morning!";
+      } else if (hour >= 12 && hour < 18) {
+        greetingEl.innerText = "Good afternoon!";
+      } else {
+        greetingEl.innerText = "Good evening!";
+      }
+    }
+
+    /* ==========================================================================
+       4. STEP 1 -> STEP 2: SELECT TOWNSHIP & OPEN 2-COLUMN POPUP (WITH BOLD HIGHLIGHTS)
+       ========================================================================== */
+    function handleTownshipClick(key) {
+      selectedTownshipKey = key;
+      liveSimulation.initialized = false;
+      const data = TOWNSHIPS[key];
+
+      document.getElementById('modalTownshipTitle').innerText = data.name;
+
+      const col1 = document.getElementById('colTariffList');
+      const col2 = document.getElementById('colFacilityList');
+      col1.innerHTML = '';
+      col2.innerHTML = '';
+
+      // Use innerHTML so that <b>...</b> highlights are rendered cleanly
+      data.bulletsCol1.forEach(b => {
+        const li = document.createElement('li');
+        li.innerHTML = b;
+        col1.appendChild(li);
+      });
+
+      data.bulletsCol2.forEach(b => {
+        const li = document.createElement('li');
+        li.innerHTML = b;
+        col2.appendChild(li);
+      });
+
+      document.getElementById('tariffModal').classList.remove('hidden');
+    }
+
+    /* ==========================================================================
+       5. STEP 2 -> STEP 3: PROCEED TO LIVE STATUS SCREEN
+       ========================================================================== */
+    function proceedToLiveStatus() {
+      document.getElementById('tariffModal').classList.add('hidden');
+      document.getElementById('pageTownshipSelect').classList.add('hidden');
+      document.getElementById('pageLiveStatus').classList.remove('hidden');
+
+      const data = TOWNSHIPS[selectedTownshipKey];
+      document.getElementById('townshipLocationTag').innerText = data.location;
+      currentLevel = data.defaultLevel;
+
+      renderLevelSwitcher();
+      populateForecastZoneSelect();
+      resetToRealTimePst();
+      applyDeckTheme();
+    }
+
+    function backToTownshipSelect() {
+      document.getElementById('pageLiveStatus').classList.add('hidden');
+      document.getElementById('pageTownshipSelect').classList.remove('hidden');
+    }
+
+    /* ==========================================================================
+       6. EXACT DATE & EXACT TIME EVENT HANDLERS (Detects Future vs Live)
+       ========================================================================== */
+    function isFutureSelected() {
+      const now = new Date();
+      const [y, m, d] = selectedDate.split('-').map(Number);
+      const [hr, min] = selectedTime.split(':').map(Number);
+      const selectedDt = new Date(y, m - 1, d, hr, min);
+      return selectedDt.getTime() > now.getTime() + 60000;
+    }
+
+    function onDateOrTimeChanged() {
+      const dateVal = document.getElementById('deckDatePicker').value;
+      const timeVal = document.getElementById('deckTimePicker').value;
+
+      if (dateVal) selectedDate = dateVal;
+      if (timeVal) selectedTime = timeVal;
+
+      isRealTimeMode = false;
+      liveSimulation.initialized = false;
+
+      const streamDot = document.getElementById('liveStreamDot');
+      const streamLabel = document.getElementById('liveStreamLabel');
+      if (streamDot) streamDot.className = "w-2 h-2 rounded-full bg-amber-500";
+      if (streamLabel) {
+        streamLabel.innerText = "STREAM PAUSED";
+        streamLabel.className = "tracking-wider uppercase font-bold text-amber-500";
+      }
+
+      if (isFutureSelected()) {
+        activeDashboardMode = 'forecast';
+        document.getElementById('simulationStatusText').innerText = `Future Simulation Target · ${selectedDate} · ${selectedTime} (Predictive Availability Active)`;
+        document.getElementById('simulationStatusText').className = "font-bold text-amber-500 uppercase";
+      } else {
+        activeDashboardMode = 'live';
+        document.getElementById('simulationStatusText').innerText = `Historical Diurnal Target · ${selectedDate} · ${selectedTime} (Live Deck Active)`;
+        document.getElementById('simulationStatusText').className = "font-bold text-emerald-600 uppercase";
+      }
+
+      updateDashboardModeUI();
+      recalculateSimulation();
+    }
+
+    function resetToRealTimePst() {
+      isRealTimeMode = true;
+      liveSimulation.initialized = false;
+      const now = new Date();
+      selectedDate = now.toISOString().split('T')[0];
+      selectedTime = now.toTimeString().split(' ')[0].substring(0, 5);
+
+      document.getElementById('deckDatePicker').value = selectedDate;
+      document.getElementById('deckTimePicker').value = selectedTime;
+
+      const streamDot = document.getElementById('liveStreamDot');
+      const streamLabel = document.getElementById('liveStreamLabel');
+      if (streamDot) streamDot.className = "w-2 h-2 rounded-full bg-emerald-500 pulse-dot";
+      if (streamLabel) {
+        streamLabel.innerText = "STREAM ACTIVE";
+        streamLabel.className = "tracking-wider uppercase font-bold text-emerald-600 dark:text-emerald-400";
+      }
+
+      activeDashboardMode = 'live';
+      document.getElementById('simulationStatusText').innerText = "Live Real-Time PST (Live 3D Deck Active)";
+      document.getElementById('simulationStatusText').className = "font-bold text-emerald-600 uppercase";
+
+      renderLevelSwitcher();
+      updateDashboardModeUI();
+      recalculateSimulation();
+    }
+
+    function setDashboardMode(mode) {
+      activeDashboardMode = mode;
+      updateDashboardModeUI();
+      recalculateSimulation();
+    }
+
+    function updateDashboardModeUI() {
+      const secLive = document.getElementById('sectionLiveDeckView');
+      const secForecast = document.getElementById('sectionForecastView');
+      const btnLive = document.getElementById('btnModeLive');
+      const btnForecast = document.getElementById('btnModeForecast');
+
+      if (activeDashboardMode === 'forecast') {
+        secLive.classList.add('hidden');
+        secForecast.classList.remove('hidden');
+        btnForecast.className = "w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 bg-amber-600 text-white shadow-sm font-black";
+        btnLive.className = "w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white";
+      } else {
+        secLive.classList.remove('hidden');
+        secForecast.classList.add('hidden');
+        btnLive.className = "w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 bg-emerald-600 text-white shadow-sm font-black";
+        btnForecast.className = "w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white";
+      }
+    }
+
+    /* ==========================================================================
+       7. MATHEMATICAL SIMULATION & ML PREDICTOR ENGINE (Backed by HistGradientBoostingRegressor)
+       ========================================================================== */
+    function getGaussianOccupancyFallback(hourFrac, isWeekend, zoneType) {
+      let base = 0.08;
+      if (zoneType === "office") {
+        if (!isWeekend) {
+          base = 0.05
+            + 0.65 * Math.exp(-Math.pow(hourFrac - 10.0, 2) / (2 * Math.pow(1.8, 2)))
+            + 0.55 * Math.exp(-Math.pow(hourFrac - 14.5, 2) / (2 * Math.pow(2.0, 2)))
+            - 0.15 * Math.exp(-Math.pow(hourFrac - 12.5, 2) / (2 * Math.pow(0.8, 2)));
+        } else {
+          base = 0.05 + 0.12 * Math.exp(-Math.pow(hourFrac - 12.0, 2) / (2 * Math.pow(3.0, 2)));
+        }
+      } else if (zoneType === "residential") {
+        if (!isWeekend) {
+          base = 0.82
+            - 0.40 * Math.exp(-Math.pow(hourFrac - 12.0, 2) / (2 * Math.pow(3.5, 2)))
+            + 0.10 * Math.exp(-Math.pow(hourFrac - 20.0, 2) / (2 * Math.pow(2.0, 2)));
+        } else {
+          base = 0.82 - 0.18 * Math.exp(-Math.pow(hourFrac - 13.0, 2) / (2 * Math.pow(3.0, 2)));
+        }
+      } else { // "mall"
+        if (!isWeekend) {
+          base = 0.08
+            + 0.55 * Math.exp(-Math.pow(hourFrac - 12.5, 2) / (2 * Math.pow(3.0, 2)))
+            + 0.75 * Math.exp(-Math.pow(hourFrac - 18.5, 2) / (2 * Math.pow(2.5, 2)))
+            + 0.30 * Math.exp(-Math.pow(hourFrac - 9.5, 2) / (2 * Math.pow(1.5, 2)));
+        } else {
+          base = 0.10
+            + 0.80 * Math.exp(-Math.pow(hourFrac - 15.0, 2) / (2 * Math.pow(4.0, 2)))
+            + 0.25 * Math.exp(-Math.pow(hourFrac - 11.0, 2) / (2 * Math.pow(2.0, 2)));
+        }
+      }
+      return base;
+    }
+
+    // Direct Access to Backend ML Predictions from parking.db & predictor.py
+    function getPredictiveBackendOccupancy(zoneId, pyDow, hour, minute, isWeekend, zoneType) {
+      if (BACKEND && BACKEND.ml_predictions && BACKEND.ml_predictions[zoneId]) {
+        const zoneData = BACKEND.ml_predictions[zoneId];
+        if (zoneData[pyDow]) {
+          const curHourData = zoneData[pyDow][hour] || { trained: 0.50, baseline: 0.50, adjusted: 0.55 };
+          const nextHour = (hour + 1) % 24;
+          const nextHourData = zoneData[pyDow][nextHour] || curHourData;
+          const minFrac = minute / 60.0;
+
+          const trainedEst = curHourData.trained + (nextHourData.trained - curHourData.trained) * minFrac;
+          const baselineEst = curHourData.baseline + (nextHourData.baseline - curHourData.baseline) * minFrac;
+          const adjustedEst = curHourData.adjusted + (nextHourData.adjusted - curHourData.adjusted) * minFrac;
+
+          return {
+            trained: Math.max(0.04, Math.min(0.96, trainedEst)),
+            baseline: Math.max(0.04, Math.min(0.96, baselineEst)),
+            adjusted: Math.max(0.04, Math.min(0.98, adjustedEst))
+          };
+        }
+      }
+
+      // High-accuracy mathematical fallback if backend offline
+      const base = getGaussianOccupancyFallback(hour + minute / 60.0, isWeekend, zoneType);
+      return {
+        trained: base,
+        baseline: base * 0.94,
+        adjusted: base + 0.05 * (1.0 - base)
+      };
+    }
+
+    function getRushPeriod(hour, minute) {
+      const timeVal = hour + minute / 60.0;
+      if (timeVal >= 7.0 && timeVal < 10.0) {
+        return {
+          title: "MORNING COMMUTER RUSH (7:00 AM - 10:00 AM)",
+          desc: "High corporate influx. Multi-deck upper levels filling up for day parking."
+        };
+      } else if (timeVal >= 11.5 && timeVal < 14.0) {
+        return {
+          title: "MIDDAY LUNCH RUSH (11:30 AM - 2:00 PM)",
+          desc: "Peak retail and restaurant demand. Rapid turnover across primary levels."
+        };
+      } else if (timeVal >= 14.0 && timeVal < 17.5) {
+        return {
+          title: "AFTERNOON LEISURE (2:00 PM - 5:30 PM)",
+          desc: "Steady shopping and cinema traffic. Moderate availability across all decks."
+        };
+      } else if (timeVal >= 17.5 && timeVal < 21.5) {
+        return {
+          title: "EVENING DINING & CINEMA PEAK (5:30 PM - 9:30 PM)",
+          desc: "Heavy mall entertainment and dining surge. Levels near peak saturation."
+        };
+      } else {
+        return {
+          title: "NIGHT LULL & GRACE WINDOW (9:30 PM - 7:00 AM)",
+          desc: "Low parking activity. High availability with overnight grace monitoring."
+        };
+      }
+    }
+
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    /* ==========================================================================
+       8. RE-CALCULATION & SYNC (LIVE 3D DECK + FUTURE PREDICTIVE FORECAST)
+       ========================================================================== */
+    function populateForecastZoneSelect() {
+      const select = document.getElementById('forecastZoneSelect');
+      if (!select) return;
+      select.innerHTML = '';
+      const townshipData = TOWNSHIPS[selectedTownshipKey] || {};
+      const levels = townshipData.levels || ["4F", "B1", "B2"];
+      const levelMetaMap = townshipData.levelMeta || {};
+
+      levels.forEach(lvl => {
+        const meta = levelMetaMap[lvl] || {};
+        const opt = document.createElement('option');
+        opt.value = lvl;
+        opt.innerText = meta.fullZoneName || `${townshipData.name} — Level ${lvl}`;
+        if (lvl === currentLevel) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function onForecastZoneChange() {
+      const select = document.getElementById('forecastZoneSelect');
+      if (select) {
+        currentLevel = select.value;
+        liveSimulation.initialized = false;
+        renderLevelSwitcher();
+        recalculateSimulation();
+      }
+    }
+
+    function recalculateSimulation() {
+      const dateParts = selectedDate.split('-').map(Number);
+      const timeParts = selectedTime.split(':').map(Number);
+
+      const year = dateParts[0];
+      const month = dateParts[1];
+      const day = dateParts[2];
+      const hour = timeParts[0];
+      const minute = timeParts[1];
+
+      const hourFrac = hour + minute / 60.0;
+      const dateObj = new Date(year, month - 1, day, hour, minute);
+      const isWeekend = (dateObj.getDay() === 0 || dateObj.getDay() === 6);
+      // Map JS getDay() (0=Sun..6=Sat) to Python dayofweek (0=Mon..6=Sun)
+      const pyDow = (dateObj.getDay() === 0) ? 6 : (dateObj.getDay() - 1);
+
+      updateGreeting(hour);
+
+      const rush = getRushPeriod(hour, minute);
+      document.getElementById('rushTitle').innerText = rush.title;
+      document.getElementById('rushDesc').innerText = rush.desc;
+
+      const townshipData = TOWNSHIPS[selectedTownshipKey] || {};
+      const levelMetaMap = townshipData.levelMeta || {};
+      const meta = levelMetaMap[currentLevel] || { desc: "Mall & Office Bays", zoneType: "mall", zoneId: 1 };
+      const zoneType = meta.zoneType || "mall";
+      const zoneId = meta.zoneId || (townshipData.zoneIdMap ? townshipData.zoneIdMap[currentLevel] : 1);
+
+      // Philippine National Holiday check
+      const mmdd = `${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const holidayName = PH_HOLIDAYS_MAP[selectedDate] || PH_HOLIDAYS_MAP[mmdd];
+      let holidayMult = 1.0;
+      const holidayBanner = document.getElementById('holidayAlertBanner');
+      if (holidayName) {
+        holidayMult = (zoneType === "mall") ? 1.35 : 0.25;
+        holidayBanner.classList.remove('hidden');
+        document.getElementById('holidayBannerText').innerText = `Philippine National Holiday: ${holidayName} (Retail Demand Surge +35%)`;
+      } else {
+        holidayBanner.classList.add('hidden');
+      }
+
+      // Scheduled Megaworld Event check (Real-time Scraped Facebook & Megaworld CMS Events)
+      const evt = EVENTS_REGISTRY.find(e => (e.siteKey === selectedTownshipKey || e.siteKey === 'all') && selectedDate >= e.start && selectedDate <= e.end);
+      let eventMult = 1.0;
+      const eventBanner = document.getElementById('eventAlertBanner');
+      if (evt) {
+        eventMult = evt.factor;
+        eventBanner.classList.remove('hidden');
+        document.getElementById('eventBannerText').innerText = `Active Event: ${evt.title} (+${Math.round((evt.factor - 1) * 100)}% Traffic)`;
+      } else {
+        eventBanner.classList.add('hidden');
+      }
+
+      // Grounded ML predictions from scikit-learn model trained on parking.db history
+      const mlData = getPredictiveBackendOccupancy(zoneId, pyDow, hour, minute, isWeekend, zoneType);
+      const baseRate = mlData.trained;
+      const effectiveRate = Math.min(Math.max(baseRate * holidayMult * eventMult, 0.05), 0.96);
+      liveSimulation.targetRate = effectiveRate;
+
+      const totalBays = 24;
+      const nOccupiedTotal = Math.min(Math.max(Math.round(effectiveRate * totalBays), 1), 23);
+      const nGrace = Math.max(Math.round(nOccupiedTotal * 0.28), 1);
+      const nOccupied = nOccupiedTotal - nGrace;
+      const nFree = totalBays - nOccupied - nGrace;
+      const loadPct = Math.round(((nOccupied + nGrace) / totalBays) * 100);
+
+      renderDeckStalls(nFree, nOccupied, nGrace, dateObj, townshipData.siteId || 1, zoneId);
+
+      if (isRealTimeMode && liveSimulation.initialized) {
+        const curFree = liveSimulation.stalls.filter(s => s.status === 'free').length;
+        const curOcc = liveSimulation.stalls.filter(s => s.status === 'occupied').length;
+        const curGrace = liveSimulation.stalls.filter(s => s.status === 'grace').length;
+        const curLoad = Math.round(((curOcc + curGrace) / 24) * 100);
+
+        document.getElementById('kpiFree').innerText = curFree;
+        document.getElementById('kpiOccupied').innerText = curOcc;
+        document.getElementById('kpiGrace').innerText = curGrace;
+        document.getElementById('kpiLoad').innerText = `${curLoad}%`;
+      } else {
+        document.getElementById('kpiFree').innerText = nFree;
+        document.getElementById('kpiOccupied').innerText = nOccupied;
+        document.getElementById('kpiGrace').innerText = nGrace;
+        document.getElementById('kpiLoad').innerText = `${loadPct}%`;
+      }
+
+      renderPredictiveForecast(dateObj, effectiveRate, hour, dateObj.getDay(), pyDow, zoneId, holidayName, evt, mlData.baseline, mlData.trained, mlData.adjusted);
+
+      computeFee();
+    }
+
+    /* ==========================================================================
+       9. RENDER PREDICTIVE AVAILABILITY VIEW (Backed by HistGradientBoostingRegressor)
+       ========================================================================== */
+    function renderPredictiveForecast(dateObj, effectiveRate, hour, dow, pyDow, zoneId, holidayName, evt, rawBaseline, rawTrained, rawAdjusted) {
+      const weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      
+      const weekdayStr = weekdayNames[dateObj.getDay()].toUpperCase();
+      const monthStr = monthNames[dateObj.getMonth()].toUpperCase();
+      const dayStr = dateObj.getDate();
+      const yearStr = dateObj.getFullYear();
+      
+      let hr12 = dateObj.getHours();
+      const ampm = hr12 >= 12 ? "PM" : "AM";
+      hr12 = hr12 % 12;
+      hr12 = hr12 ? hr12 : 12;
+      const timeFormatted = `${String(hr12).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')} ${ampm}`;
+
+      const eyebrowText = `FORECAST FOR ${weekdayStr}, ${monthStr} ${dayStr}, ${yearStr} · ${timeFormatted}`;
+      document.getElementById('forecastBannerEyebrow').innerText = eyebrowText;
+
+      const eventFactor = evt ? evt.factor : 1.0;
+      const holidayFactor = holidayName ? 1.35 : 1.0;
+
+      const baselineEst = Math.min(Math.max(rawBaseline * eventFactor * holidayFactor, 0.05), 0.96);
+      const trainedEst = Math.min(Math.max(rawTrained * eventFactor * holidayFactor, 0.05), 0.96);
+      const adjustedEst = Math.min(Math.max(trainedEst + 0.05 * (1.0 - trainedEst), 0.08), 0.98);
+
+      let label = "";
+      let bannerBorderColor = "";
+      let bannerBgColor = "";
+
+      if (adjustedEst < 0.55) {
+        label = "Likely available";
+        bannerBorderColor = "#10B981";
+        bannerBgColor = "rgba(16, 185, 129, 0.12)";
+      } else if (adjustedEst < 0.80) {
+        label = "Uncertain — may be tight";
+        bannerBorderColor = "#F59E0B";
+        bannerBgColor = "rgba(245, 158, 11, 0.12)";
+      } else {
+        label = "Unlikely to have space";
+        bannerBorderColor = "#F43F5E";
+        bannerBgColor = "rgba(244, 63, 94, 0.12)";
+      }
+
+      const banner = document.getElementById('forecastMainBanner');
+      banner.style.borderColor = bannerBorderColor;
+      banner.style.backgroundColor = bannerBgColor;
+      document.getElementById('forecastBannerEyebrow').style.color = bannerBorderColor;
+      document.getElementById('forecastBannerValue').innerText = label;
+
+      document.getElementById('predBaseline').innerText = `${Math.round(baselineEst * 100)}%`;
+      document.getElementById('predTrained').innerText = `${Math.round(trainedEst * 100)}%`;
+      document.getElementById('predAdjusted').innerText = `${Math.round(adjustedEst * 100)}%`;
+
+      // Popular Times Busyness Index (0-100) from Google Places Telemetry
+      const townshipData = TOWNSHIPS[selectedTownshipKey] || {};
+      const mallName = townshipData.name || "Venice Grand Canal Mall";
+      let busynessIdx = 50;
+      if (BACKEND && BACKEND.popular_times) {
+        const pProfile = BACKEND.popular_times[mallName] || BACKEND.popular_times["Venice Grand Canal Mall"];
+        if (pProfile) {
+          const dayKey = (dow === 5) ? "friday" : (dow === 0 || dow === 6) ? "weekend" : "weekday";
+          const curve = pProfile[dayKey] || pProfile["weekday"];
+          busynessIdx = curve ? (curve[Math.min(hour, 23)] || 50) : 50;
+        }
+      } else {
+        const curve = (dow === 5) ? GOOGLE_BUSYNESS_CURVES.friday : (dow === 0 || dow === 6) ? GOOGLE_BUSYNESS_CURVES.weekend : GOOGLE_BUSYNESS_CURVES.weekday;
+        busynessIdx = curve[Math.min(hour, 23)] || 50;
+      }
+      document.getElementById('predBusyness').innerText = `${busynessIdx} / 100`;
+
+      // Arterial Road Delay Estimate
+      let delayMin = 4;
+      let delayStatus = "Normal Flow";
+      let arterial = "Upper McKinley Rd & Lawton Ave";
+      if (selectedTownshipKey === "uptown") arterial = "36th Ave & 9th Ave (BGC)";
+      else if (selectedTownshipKey === "eastwood") arterial = "C-5 & E. Rodriguez Jr. Ave";
+
+      if (dow !== 0 && dow !== 6) {
+        if (hour >= 7 && hour <= 9) { delayMin = 18; delayStatus = "Morning Rush"; }
+        else if (hour >= 17 && hour <= 20) { delayMin = 25; delayStatus = "Evening Congestion"; }
+        else if (hour >= 12 && hour <= 14) { delayMin = 10; delayStatus = "Lunch Flow"; }
+      } else {
+        if (hour >= 15 && hour <= 21) { delayMin = 16; delayStatus = "Weekend Inflow"; }
+        else { delayMin = 5; delayStatus = "Light Flow"; }
+      }
+      document.getElementById('predDelay').innerText = `+${delayMin} mins`;
+      document.getElementById('predDelaySub').innerText = `${delayStatus} (${arterial})`;
+
+      // Real-time weather telemetry from Open-Meteo API
+      let tempVal = "29.0°C";
+      let condVal = "Partly Cloudy";
+      if (BACKEND && BACKEND.weather && BACKEND.weather[selectedTownshipKey]) {
+        const w = BACKEND.weather[selectedTownshipKey];
+        tempVal = `${w.temp}°C`;
+        condVal = w.condition;
+      }
+      document.getElementById('predWeather').innerText = tempVal;
+      document.getElementById('predWeatherSub').innerText = condVal;
+    }
+
+    /* ==========================================================================
+       10. 3D DECK RENDERING & REAL-TIME TICKING ENGINE (Backed by parking.db Slots & Plates)
+       ========================================================================== */
+    function getStallColorClass(status, isLightDeck) {
+      if (status === 'free') {
+        return isLightDeck 
+          ? 'bg-[#059669] text-white font-black shadow-[0_0_8px_rgba(5,150,105,0.4)]'
+          : 'bg-[#05DF72] text-slate-950 font-black shadow-[0_0_8px_rgba(5,223,114,0.35)]';
+      } else if (status === 'occupied') {
+        return isLightDeck
+          ? 'bg-[#DC2626] text-white font-black shadow-[0_0_8px_rgba(220,38,38,0.35)]'
+          : 'bg-[#FF4242] text-white font-black shadow-[0_0_8px_rgba(255,66,66,0.3)]';
+      } else {
+        return isLightDeck
+          ? 'bg-[#0284C7] text-white font-black shadow-[0_0_8px_rgba(2,132,199,0.4)]'
+          : 'bg-[#00D0FF] text-slate-950 font-black shadow-[0_0_8px_rgba(0,208,255,0.35)]';
+      }
+    }
+
+    function renderDeckStalls(nFree, nOccupied, nGrace, dateObj, siteId, zoneId) {
+      const row1 = document.getElementById('row1Stalls');
+      const row2 = document.getElementById('row2Stalls');
+      const row3 = document.getElementById('row3Stalls');
+      const row4 = document.getElementById('row4Stalls');
+
+      if (!row1 || !row2 || !row3 || !row4) return;
+
+      row1.innerHTML = '';
+      row2.innerHTML = '';
+      row3.innerHTML = '';
+      row4.innerHTML = '';
+
+      const isLightDeck = (currentDeckTheme === 'light');
+      const dateSeed = dateObj.getFullYear() * 1000 + (dateObj.getMonth() + 1) * 50 + dateObj.getDate();
+      const blockSeed = Math.floor((dateObj.getHours() * 60 + dateObj.getMinutes()) / 5);
+      let seed = dateSeed + siteId * 100 + currentLevel.charCodeAt(0) * 10 + (blockSeed % 500);
+
+      const dbZoneSlots = (BACKEND && BACKEND.slots_by_zone && BACKEND.slots_by_zone[zoneId]) || null;
+
+      if (isRealTimeMode) {
+        if (!liveSimulation.initialized || liveSimulation.currentTownship !== selectedTownshipKey || liveSimulation.currentLevel !== currentLevel) {
+          const statuses = [];
+          for (let i = 0; i < nFree; i++) statuses.push('free');
+          for (let i = 0; i < nOccupied; i++) statuses.push('occupied');
+          for (let i = 0; i < nGrace; i++) statuses.push('grace');
+
+          for (let i = statuses.length - 1; i > 0; i--) {
+            const j = Math.floor(seededRandom(seed++) * (i + 1));
+            [statuses[i], statuses[j]] = [statuses[j], statuses[i]];
+          }
+
+          liveSimulation.stalls = [];
+          for (let i = 1; i <= 24; i++) {
+            const st = statuses[i - 1] || 'free';
+            const dbSlotObj = (dbZoneSlots && dbZoneSlots[i - 1]) ? dbZoneSlots[i - 1] : null;
+            const slotCode = dbSlotObj ? `${dbSlotObj.slot_code} (${currentLevel})` : `Bay ${currentLevel}-${i < 10 ? '0' + i : i}`;
+
+            const pIndex = (i + seed) % REAL_PLATES_DATA.length;
+            const pObj = REAL_PLATES_DATA[pIndex];
+            const plate = st === 'free' ? '--' : pObj.plate;
+            const ocr = st === 'free' ? '--' : `${pObj.confidence}% Confidence (ALPR Read: ${pObj.raw_ocr})`;
+            const tariff = st === 'free' ? 'Available / Unreserved' : (st === 'grace' ? 'Payment Settled (15-Min Free Grace Active)' : 'Unpaid Active Parking (Base Tariff Applied)');
+
+            liveSimulation.stalls.push({
+              id: i,
+              code: slotCode,
+              status: st,
+              plate: plate,
+              ocr: ocr,
+              tariff: tariff
+            });
+          }
+
+          liveSimulation.initialized = true;
+          liveSimulation.currentTownship = selectedTownshipKey;
+          liveSimulation.currentLevel = currentLevel;
+        }
+
+        // Render current living stalls
+        for (let i = 1; i <= 24; i++) {
+          const stallData = liveSimulation.stalls[i - 1];
+          currentStallDetails[i] = stallData;
+          const colorClass = getStallColorClass(stallData.status, isLightDeck);
+
+          const stall = document.createElement('div');
+          stall.id = `deckStall_${i}`;
+          stall.className = `stall-block h-[26px] rounded-md flex items-center justify-center cursor-pointer font-mono font-black text-[10px] select-none transition-all duration-300 ${colorClass}`;
+          stall.innerText = `${i}`;
+          stall.onclick = () => inspectStall(i);
+
+          if (i <= 6) row1.appendChild(stall);
+          else if (i <= 12) row2.appendChild(stall);
+          else if (i <= 18) row3.appendChild(stall);
+          else row4.appendChild(stall);
+        }
+      } else {
+        // Historical or Future deterministic layout
+        liveSimulation.initialized = false;
+        const statuses = [];
+        for (let i = 0; i < nFree; i++) statuses.push('free');
+        for (let i = 0; i < nOccupied; i++) statuses.push('occupied');
+        for (let i = 0; i < nGrace; i++) statuses.push('grace');
+
+        for (let i = statuses.length - 1; i > 0; i--) {
+          const j = Math.floor(seededRandom(seed++) * (i + 1));
+          [statuses[i], statuses[j]] = [statuses[j], statuses[i]];
+        }
+
+        for (let i = 1; i <= 24; i++) {
+          const st = statuses[i - 1] || 'free';
+          const dbSlotObj = (dbZoneSlots && dbZoneSlots[i - 1]) ? dbZoneSlots[i - 1] : null;
+          const slotCode = dbSlotObj ? `${dbSlotObj.slot_code} (${currentLevel})` : `Bay ${currentLevel}-${i < 10 ? '0' + i : i}`;
+
+          const pIndex = (i + seed) % REAL_PLATES_DATA.length;
+          const pObj = REAL_PLATES_DATA[pIndex];
+          const plate = st === 'free' ? '--' : pObj.plate;
+          const ocr = st === 'free' ? '--' : `${pObj.confidence}% Confidence (ALPR Read: ${pObj.raw_ocr})`;
+          const tariff = st === 'free' ? 'Available / Unreserved' : (st === 'grace' ? 'Payment Settled (15-Min Free Grace Active)' : 'Unpaid Active Parking (Base Tariff Applied)');
+
+          currentStallDetails[i] = {
+            code: slotCode,
+            status: st,
+            plate: plate,
+            ocr: ocr,
+            tariff: tariff
+          };
+
+          const colorClass = getStallColorClass(st, isLightDeck);
+          const stall = document.createElement('div');
+          stall.id = `deckStall_${i}`;
+          stall.className = `stall-block h-[26px] rounded-md flex items-center justify-center cursor-pointer font-mono font-black text-[10px] select-none transition-all duration-300 ${colorClass}`;
+          stall.innerText = `${i}`;
+          stall.onclick = () => inspectStall(i);
+
+          if (i <= 6) row1.appendChild(stall);
+          else if (i <= 12) row2.appendChild(stall);
+          else if (i <= 18) row3.appendChild(stall);
+          else row4.appendChild(stall);
+        }
+      }
+    }
+
+    /* Real-Time Ticking State Transition Engine */
+    function tickLiveSimulationEngine() {
+      if (!liveSimulation.initialized || liveSimulation.stalls.length !== 24) return;
+
+      liveSimulation.secondsAccumulator++;
+      if (liveSimulation.secondsAccumulator < liveSimulation.nextEventInterval) return;
+
+      liveSimulation.secondsAccumulator = 0;
+      liveSimulation.nextEventInterval = 5 + Math.floor(Math.random() * 4); // 5 to 8s
+
+      const stalls = liveSimulation.stalls;
+      const freeStalls = stalls.filter(s => s.status === 'free');
+      const occupiedStalls = stalls.filter(s => s.status === 'occupied');
+      const graceStalls = stalls.filter(s => s.status === 'grace');
+
+      const currentOccupiedRate = (occupiedStalls.length + graceStalls.length) / 24;
+      const targetRate = liveSimulation.targetRate || 0.54;
+
+      let eventType = 'ingress';
+      if (graceStalls.length >= 3) {
+        eventType = 'egress';
+      } else if (currentOccupiedRate < targetRate - 0.05 && freeStalls.length > 0) {
+        eventType = 'ingress';
+      } else if (currentOccupiedRate > targetRate + 0.05 && (graceStalls.length > 0 || occupiedStalls.length > 0)) {
+        eventType = graceStalls.length > 0 ? 'egress' : 'grace';
+      } else {
+        const r = Math.random();
+        if (r < 0.40 && freeStalls.length > 0) {
+          eventType = 'ingress';
+        } else if (r < 0.70 && occupiedStalls.length > 0) {
+          eventType = 'grace';
+        } else if (graceStalls.length > 0) {
+          eventType = 'egress';
+        } else if (freeStalls.length > 0) {
+          eventType = 'ingress';
+        } else {
+          eventType = 'grace';
+        }
+      }
+
+      const isLightDeck = (currentDeckTheme === 'light');
+      let targetStall = null;
+      let logAction = "";
+
+      if (eventType === 'ingress' && freeStalls.length > 0) {
+        targetStall = freeStalls[Math.floor(Math.random() * freeStalls.length)];
+        targetStall.status = 'occupied';
+        const randomPlateObj = REAL_PLATES_DATA[Math.floor(Math.random() * REAL_PLATES_DATA.length)];
+        targetStall.plate = randomPlateObj.plate;
+        targetStall.ocr = `${randomPlateObj.confidence}% Confidence (ALPR Read: ${randomPlateObj.raw_ocr})`;
+        targetStall.tariff = 'Unpaid Active Parking (Base Tariff)';
+        logAction = `ARRIVED (${randomPlateObj.plate})`;
+      } else if (eventType === 'grace' && occupiedStalls.length > 0) {
+        targetStall = occupiedStalls[Math.floor(Math.random() * occupiedStalls.length)];
+        targetStall.status = 'grace';
+        targetStall.tariff = 'Payment Settled (15-Min Free Grace Active)';
+        logAction = "PAID (GRACE 15M)";
+      } else if (eventType === 'egress' && graceStalls.length > 0) {
+        targetStall = graceStalls[Math.floor(Math.random() * graceStalls.length)];
+        targetStall.status = 'free';
+        targetStall.plate = '--';
+        targetStall.ocr = '--';
+        targetStall.tariff = 'Available / Unreserved';
+        logAction = "DEPARTED (FREE)";
+      } else if (freeStalls.length > 0) {
+        targetStall = freeStalls[Math.floor(Math.random() * freeStalls.length)];
+        targetStall.status = 'occupied';
+        const randomPlateObj = REAL_PLATES_DATA[Math.floor(Math.random() * REAL_PLATES_DATA.length)];
+        targetStall.plate = randomPlateObj.plate;
+        targetStall.ocr = `${randomPlateObj.confidence}% Confidence (ALPR Read: ${randomPlateObj.raw_ocr})`;
+        targetStall.tariff = 'Unpaid Active Parking (Base Tariff)';
+        logAction = `ARRIVED (${randomPlateObj.plate})`;
+      }
+
+      if (!targetStall) return;
+
+      currentStallDetails[targetStall.id] = targetStall;
+
+      const stallEl = document.getElementById(`deckStall_${targetStall.id}`);
+      if (stallEl) {
+        stallEl.className = `stall-block h-[26px] rounded-md flex items-center justify-center cursor-pointer font-mono font-black text-[10px] select-none transition-all duration-300 ${getStallColorClass(targetStall.status, isLightDeck)} stall-transitioning`;
+        
+        setTimeout(() => {
+          if (stallEl) stallEl.classList.remove('stall-transitioning');
+        }, 1200);
+      }
+
+      const newFree = stalls.filter(s => s.status === 'free').length;
+      const newOccupied = stalls.filter(s => s.status === 'occupied').length;
+      const newGrace = stalls.filter(s => s.status === 'grace').length;
+      const newLoadPct = Math.round(((newOccupied + newGrace) / 24) * 100);
+
+      const kpiFreeEl = document.getElementById('kpiFree');
+      const kpiOccEl = document.getElementById('kpiOccupied');
+      const kpiGraceEl = document.getElementById('kpiGrace');
+      const kpiLoadEl = document.getElementById('kpiLoad');
+
+      if (kpiFreeEl) {
+        kpiFreeEl.innerText = newFree;
+        kpiFreeEl.classList.add('kpi-tick-flash');
+        setTimeout(() => kpiFreeEl.classList.remove('kpi-tick-flash'), 800);
+      }
+      if (kpiOccEl) {
+        kpiOccEl.innerText = newOccupied;
+        kpiOccEl.classList.add('kpi-tick-flash');
+        setTimeout(() => kpiOccEl.classList.remove('kpi-tick-flash'), 800);
+      }
+      if (kpiGraceEl) {
+        kpiGraceEl.innerText = newGrace;
+        kpiGraceEl.classList.add('kpi-tick-flash');
+        setTimeout(() => kpiGraceEl.classList.remove('kpi-tick-flash'), 800);
+      }
+      if (kpiLoadEl) {
+        kpiLoadEl.innerText = `${newLoadPct}%`;
+        kpiLoadEl.classList.add('kpi-tick-flash');
+        setTimeout(() => kpiLoadEl.classList.remove('kpi-tick-flash'), 800);
+      }
+
+      const streamLabel = document.getElementById('liveStreamLabel');
+      if (streamLabel) {
+        streamLabel.innerText = `BAY ${currentLevel}-${targetStall.id < 10 ? '0' + targetStall.id : targetStall.id}: ${logAction}`;
+        setTimeout(() => {
+          if (isRealTimeMode && streamLabel) {
+            streamLabel.innerText = "STREAM ACTIVE";
+          }
+        }, 2800);
+      }
+
+      if (liveSimulation.inspectedStallId === targetStall.id) {
+        const sheet = document.getElementById('bayInspectorSheet');
+        if (sheet && !sheet.classList.contains('hidden')) {
+          inspectStall(targetStall.id);
+        }
+      }
+    }
+
+    function inspectStall(bayNumber) {
+      liveSimulation.inspectedStallId = bayNumber;
+      const details = currentStallDetails[bayNumber];
+      if (!details) return;
+
+      const sheet = document.getElementById('bayInspectorSheet');
+      sheet.classList.remove('hidden');
+
+      document.getElementById('inspectSlotCode').innerText = details.code;
+
+      const statusEl = document.getElementById('inspectStatus');
+      if (details.status === 'free') {
+        statusEl.innerText = "Available / Free Bay";
+        statusEl.className = "font-bold text-emerald-500 mt-0.5";
+      } else if (details.status === 'occupied') {
+        statusEl.innerText = "Occupied (Active Parking)";
+        statusEl.className = "font-bold text-rose-500 mt-0.5";
+      } else {
+        statusEl.innerText = "15-Min Free Grace Active (Payment Settled)";
+        statusEl.className = "font-bold text-sky-500 mt-0.5";
+      }
+
+      document.getElementById('inspectPlate').innerText = details.plate;
+      document.getElementById('inspectOcr').innerText = details.ocr;
+      document.getElementById('inspectTariff').innerText = details.tariff;
+
+      sheet.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    /* ==========================================================================
+       11. LEVEL SWITCHER (Google Maps Style Pill on Left)
+       ========================================================================== */
+    function renderLevelSwitcher() {
+      const switcher = document.getElementById('levelSwitcher');
+      if (!switcher) return;
+      switcher.innerHTML = '';
+      const townshipData = TOWNSHIPS[selectedTownshipKey] || {};
+      const levels = townshipData.levels || ["4F", "B1", "B2"];
+      const levelMetaMap = townshipData.levelMeta || {};
+      const meta = levelMetaMap[currentLevel] || { desc: "Upper Deck Open Bays" };
+      const isLightDeck = (currentDeckTheme === 'light');
+
+      levels.forEach(lvl => {
+        const btn = document.createElement('button');
+        const isActive = (lvl === currentLevel);
+        
+        if (isLightDeck) {
+          btn.className = `w-8 h-8 text-[11px] font-mono font-bold rounded-xl transition-all flex items-center justify-center ${
+            isActive 
+              ? 'bg-amber-700 text-white shadow-md font-black ring-2 ring-amber-500/50' 
+              : 'text-slate-700 hover:text-slate-950 hover:bg-amber-100/70 font-semibold'
+          }`;
+        } else {
+          btn.className = `w-8 h-8 text-[11px] font-mono font-bold rounded-xl transition-all flex items-center justify-center ${
+            isActive 
+              ? 'bg-amber-600 text-white shadow-md font-black ring-2 ring-amber-400/50' 
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/90 font-semibold'
+          }`;
+        }
+
+        btn.innerText = lvl;
+        btn.setAttribute('title', `Switch to Level ${lvl}`);
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          currentLevel = lvl;
+          liveSimulation.initialized = false;
+          renderLevelSwitcher();
+          const zoneSelect = document.getElementById('forecastZoneSelect');
+          if (zoneSelect) zoneSelect.value = lvl;
+          recalculateSimulation();
+        };
+        switcher.appendChild(btn);
+      });
+
+      const badgeEl = document.getElementById('activeFloorBadge');
+      if (badgeEl) {
+        badgeEl.innerText = `LEVEL ${currentLevel}`;
+        badgeEl.style.cursor = 'pointer';
+        badgeEl.title = 'Click to cycle parking level';
+        badgeEl.onclick = () => {
+          const idx = levels.indexOf(currentLevel);
+          const nextLvl = levels[(idx + 1) % levels.length];
+          currentLevel = nextLvl;
+          liveSimulation.initialized = false;
+          renderLevelSwitcher();
+          const zoneSelect = document.getElementById('forecastZoneSelect');
+          if (zoneSelect) zoneSelect.value = nextLvl;
+          recalculateSimulation();
+        };
+      }
+      const descEl = document.getElementById('deckLevelDesc');
+      if (descEl) descEl.innerText = meta.desc || "Designated Bays";
+    }
+
+    function toggle3D() {
+      is3D = !is3D;
+      const surface = document.getElementById('deckSurface');
+      const label = document.getElementById('toggle3DLabel');
+      if (is3D) {
+        if (surface) surface.classList.remove('flat-mode');
+        if (label) label.innerText = "3D";
+      } else {
+        if (surface) surface.classList.add('flat-mode');
+        if (label) label.innerText = "2D";
+      }
+    }
+
+    /* ==========================================================================
+       12. DYNAMIC FEE CALCULATOR (Backed by revenue_config.py & revenue_engine.py)
+       ========================================================================== */
+    function openFeeCalculator() {
+      const timeInput = document.getElementById('calcTime');
+      if (timeInput) timeInput.value = selectedTime;
+      computeFee();
+      document.getElementById('calcModal').classList.remove('hidden');
+    }
+
+    function computeFee() {
+      const durationEl = document.getElementById('calcDuration');
+      if (!durationEl) return;
+      const duration = parseInt(durationEl.value);
+      const timeStr = (document.getElementById('calcTime') && document.getElementById('calcTime').value) || selectedTime || "12:00";
+      const hour = parseInt(timeStr.split(':')[0]);
+
+      const [year, month, day] = selectedDate.split('-').map(Number);
+      const dateObj = new Date(year, month - 1, day);
+      const isWeekend = (dateObj.getDay() === 0 || dateObj.getDay() === 6);
+
+      const mmdd = `${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const isHoliday = Boolean(PH_HOLIDAYS_MAP[selectedDate] || PH_HOLIDAYS_MAP[mmdd]);
+
+      document.getElementById('durationLabel').innerText = `${duration} Hour${duration > 1 ? 's' : ''}`;
+
+      let totalFee = 0;
+      let baseFee = 0;
+      let succeedingFee = 0;
+      let note = "";
+
+      const townshipData = TOWNSHIPS[selectedTownshipKey] || {};
+      const tariffs = townshipData.tariffs || {};
+
+      if (selectedTownshipKey === 'venice') {
+        baseFee = tariffs.first_3hr_flat || 50;
+        const succeedingRate = tariffs.succeeding_hr || 20;
+        if (duration > 3) succeedingFee = (duration - 3) * succeedingRate;
+        totalFee = baseFee + succeedingFee;
+        note = "Venice Grand Canal Mall: Flat ₱50.00 first 3 hrs, then ₱20.00 per succeeding hr.";
+      } else if (selectedTownshipKey === 'uptown') {
+        baseFee = tariffs.first_3hr_flat || 50;
+        const tier1Rate = tariffs["4th_to_7th_hr"] || 15;
+        const amRate = tariffs["7th_hr_plus_am"] || 100;
+        const pmRate = tariffs["7th_hr_plus_pm"] || 30;
+        const isAmEntry = (hour >= 6 && hour < 12);
+
+        if (duration <= 3) {
+          succeedingFee = 0;
+        } else if (duration <= 7) {
+          succeedingFee = (duration - 3) * tier1Rate;
+        } else {
+          const tier2 = 4 * tier1Rate;
+          const tier3Rate = isAmEntry ? amRate : pmRate;
+          succeedingFee = tier2 + (duration - 7) * tier3Rate;
+        }
+        totalFee = baseFee + succeedingFee;
+        note = isAmEntry && duration > 7 
+          ? "Uptown BGC: Commuter Rate Triggered (₱100/hr past 7h for AM arrivals to discourage all-day corporate hoarding)."
+          : "Uptown BGC: Flat ₱50 first 3 hrs, ₱15/hr (hrs 4–7), ₱30/hr thereafter.";
+      } else if (selectedTownshipKey === 'eastwood') {
+        const weekendFlat = tariffs.weekend_holiday_flat || 60;
+        const weekdaySucceeding = tariffs.succeeding_hr_weekday || 20;
+        baseFee = tariffs.first_3hr_flat || 60;
+
+        if (isWeekend || isHoliday) {
+          totalFee = weekendFlat;
+          baseFee = weekendFlat;
+          succeedingFee = 0;
+          note = "Eastwood City Weekend & Holiday Promo: ₱60.00 Flat Rate All Day Applied!";
+        } else {
+          if (duration > 3) succeedingFee = (duration - 3) * weekdaySucceeding;
+          totalFee = baseFee + succeedingFee;
+          note = "Eastwood City Weekday Tariff: ₱60 first 3 hrs, ₱20/hr succeeding.";
+        }
+      }
+
+      document.getElementById('calcTotalDisplay').innerText = `₱${totalFee.toFixed(2)}`;
+      document.getElementById('calcBreakdownBase').innerText = `₱${baseFee.toFixed(2)}`;
+      document.getElementById('calcBreakdownSucceeding').innerText = `₱${succeedingFee.toFixed(2)}`;
+      document.getElementById('calcTariffRuleNote').innerText = note;
+    }
+
+    // Initial render of floor levels
+    renderLevelSwitcher();
+  </script>
+</body>
+</html>

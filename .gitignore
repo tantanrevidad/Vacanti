@@ -59,3 +59,11 @@ runs/
 # Repomix outputs & XML dumps
 repomix-output.*
 *.xml
+
+# Local scratch documentation & scripts
+New Features.md
+PROJECT_BIBLE.md
+Revised_Prototype_Plan.md
+TAB7_RETAIL_SYNERGY_IMPLEMENTATION_PLAN.md
+leakage_detector.py
+scratch/

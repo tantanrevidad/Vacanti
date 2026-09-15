@@ -22,6 +22,7 @@ An enterprise-grade Streamlit application demonstrating every layer of Vacanti e
   1. **Philippine License Plates Dataset (Roboflow Universe / LTO):** 20 authentic Philippine vehicle frames (`lpr-mgcu6/philippine-license-plates-wmxlq`) spanning LTO 2014/2018/2020 Private series (`MAT-2357`, `CAX-3200`, `LAN-3138`, `MAN-4684`, `NDU-6211`, `CBC-2080`), Legacy Rizal/Matatag series (`LHA-482`, `LEN-918`, `LGT-635`), and commercial fleet plates evaluated via multi-pass CLAHE contrast enhancement and prominence-weighted vehicle scoring.
   2. **Academic ALPR Benchmark (OpenALPR):** 14 curated international benchmark photographs with hand-verified ground truth plates.
 - **5-Phase Computer Vision Space Detection Engine:** YOLOv8n vehicle detector with adaptive low-light CLAHE contrast enhancement, true perspective polygon ROI calibration (`slots_config.json`), Intersection over Area (IoA) occupancy scoring with centroid containment, and 5-frame temporal sliding-window state debouncing ($\ge 60\%$ consensus).
+- **Vacanti Driver Mobile Portal (`driver_app.py` & `driver_portal.html`):** Luxury consumer-facing mobile web application featuring township selection cards with authentic Megaworld photography, 2-column Megaworld parking tariffs notice, interactive 3D Isometric Deck Map with Google Maps-style parking level switchers, live occupancy counters, verified Megaworld tariff estimator, and grounded predictive availability forecasting with real-time social & CMS event ingestion.
 - **Enterprise Dark & Light Mode Theme Engine:** Dynamic theme switcher with bulletproof contrast across all widgets, BaseWeb calendars, popover dropdowns, custom unindented HTML tables (`render_styled_match_table`), custom inline code badges, and adaptive Plotly charts.
 
 ---
@@ -64,10 +65,13 @@ python generate_data.py
 # Ingest and benchmark Roboflow Philippine dataset
 python build_ph_roboflow_dataset.py
 
-# Launch the Streamlit dashboard
-python -m streamlit run app.py
+# Launch the Operator Intelligence Dashboard
+python -m streamlit run app.py --server.port 8502
+
+# Launch the Vacanti Driver Mobile Portal (Consumer Web-App)
+python -m streamlit run driver_app.py --server.port 8501
 ```
-Open [http://localhost:8501](http://localhost:8501) in your browser.
+Open [http://localhost:8502](http://localhost:8502) for the Operator Dashboard or [http://localhost:8501](http://localhost:8501) for the Driver Portal in your browser.
 
 ---
 
@@ -131,6 +135,7 @@ python cv_demo.py --dataset all
 parking-poc/
 ├── .streamlit/
 │   └── config.toml               # Custom enterprise theme configuration
+├── assets/                       # High-resolution township photography & UI assets
 ├── car_dataset/                  # Multi-angle CCTV & parking row surveillance frames
 ├── cv-demo/                      # Local ALPR benchmark outputs (gitignored)
 ├── data/
@@ -147,9 +152,12 @@ parking-poc/
 │   ├── calibrate_roi.py          # Interactive GUI parking slot ROI calibrator
 │   └── debug_overlay.py          # 3-layer visual regression & diagnostic framework
 ├── app.py                        # Streamlit Enterprise Dashboard (7 Tabs)
+├── assets_base64.py              # Embedded asset payload for progressive web-app
 ├── build_ph_roboflow_dataset.py  # Authentic Philippine Roboflow dataset ingest & benchmark
 ├── calibrate.html                # Interactive browser-based polygon annotation tool
 ├── cv_demo.py                    # Computer Vision & ALPR evaluation pipeline
+├── driver_app.py                 # Vacanti Driver Mobile Portal Streamlit runner
+├── driver_portal.html            # Luxury Driver Mobile Portal single-page application
 ├── fetch_real_dataset.py         # OpenALPR benchmark dataset downloader
 ├── generate_data.py              # Synthetic database & calibrated vehicle pool generator
 ├── loyalty_engine.py             # Repeat-visitor cohort recognition & loyalty spend engine (RA 10173 compliant)
