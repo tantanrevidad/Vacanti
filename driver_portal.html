@@ -299,7 +299,7 @@
     <!-- ====================================================================
          PAGE 1: TOWNSHIP SELECTOR (With Luxury Theme Switcher & Photos)
          ==================================================================== -->
-    <div id="pageTownshipSelect" class="flex-1 flex flex-col p-4 space-y-4">
+    <div id="pageTownshipSelect" class="flex-1 flex flex-col p-4 space-y-4 pb-20">
       
       <!-- Top Brand Header with Theme Switcher -->
       <header class="pt-2 flex items-center justify-between border-b pb-3" style="border-color: var(--border-card);">
@@ -343,77 +343,130 @@
         </p>
       </div>
 
+      <!-- Airbnb-Style Search & Discovery Capsule -->
+      <div class="rounded-full p-2.5 px-4 shadow-sm border flex items-center justify-between transition-all" style="background-color: var(--bg-card); border-color: var(--border-card);">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-full border flex items-center justify-center flex-shrink-0" style="background-color: var(--accent-badge-bg); border-color: var(--border-accent); color: var(--accent-gold);">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="text-xs font-bold leading-tight" style="color: var(--text-primary);">Explore Megaworld Townships</div>
+            <div class="text-[10px] leading-tight" style="color: var(--text-muted);">Real-time bays · Verified rates · Influx AI</div>
+          </div>
+        </div>
+        <div class="w-7 h-7 rounded-full border flex items-center justify-center" style="border-color: var(--border-card); color: var(--text-secondary);">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+          </svg>
+        </div>
+      </div>
+
       <!-- Township Photo Cards Stack -->
       <div class="space-y-3.5 pt-1 flex-1">
         
         <!-- Card 1: Venice Grand Canal Mall -->
-        <div onclick="handleTownshipClick('venice')" class="group relative rounded-3xl overflow-hidden cursor-pointer border shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 h-44 flex flex-col justify-between p-4 bg-slate-900" style="border-color: var(--border-card);">
-          <img id="img-venice" src="assets/thumb_venice.jpg" alt="Venice Grand Canal Mall" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-75" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
+        <div onclick="handleTownshipClick('venice')" class="group relative rounded-3xl overflow-hidden cursor-pointer border shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 h-44 flex flex-col justify-between p-4 bg-slate-900" style="border-color: var(--border-card);">
+          <img id="img-venice" src="assets/thumb_venice.jpg" alt="Venice Grand Canal Mall" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20"></div>
 
           <!-- Top tags -->
           <div class="relative z-10 flex items-center justify-between">
-            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-200 border border-amber-300/30 shadow-sm">Taguig · McKinley Hill</span>
-            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-emerald-400 border border-emerald-400/40 flex items-center space-x-1.5">
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-200 border border-amber-300/30 shadow-sm flex items-center space-x-1">
+              <svg class="w-3 h-3 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span>Taguig · McKinley Hill</span>
+            </span>
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-emerald-400 border border-emerald-400/40 flex items-center space-x-1.5 shadow-sm">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
-              <span>● Live Status</span>
+              <span>Live 24 Bays</span>
             </span>
           </div>
 
           <!-- Bottom info -->
           <div class="relative z-10">
-            <h2 class="font-serif font-black text-lg text-white drop-shadow-md">Venice Grand Canal Mall</h2>
-            <div class="flex items-center justify-between text-[11px] font-bold text-slate-200 pt-1.5 mt-1 border-t border-white/15">
-              <span class="text-amber-200">Decks: 4F, B1, B2</span>
-              <span class="text-white bg-black/75 px-2 py-0.5 rounded-md border border-white/15 shadow">₱50 flat 3h</span>
+            <h2 class="font-serif font-black text-lg text-white">Venice Grand Canal Mall</h2>
+            <div class="flex items-center justify-between text-[11px] font-bold text-slate-200 pt-1.5 mt-1 border-t border-white/20">
+              <span class="text-amber-200 flex items-center space-x-1">
+                <svg class="w-3 h-3 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                <span>Levels 4F, B1, B2</span>
+              </span>
+              <span class="text-white bg-black/70 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/20 shadow-sm font-mono">From ₱50 / 3 hrs</span>
             </div>
           </div>
         </div>
 
         <!-- Card 2: Uptown Mall -->
-        <div onclick="handleTownshipClick('uptown')" class="group relative rounded-3xl overflow-hidden cursor-pointer border shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 h-44 flex flex-col justify-between p-4 bg-slate-900" style="border-color: var(--border-card);">
-          <img id="img-uptown" src="assets/thumb_uptown.jpg" alt="Uptown Mall" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-75" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
+        <div onclick="handleTownshipClick('uptown')" class="group relative rounded-3xl overflow-hidden cursor-pointer border shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 h-44 flex flex-col justify-between p-4 bg-slate-900" style="border-color: var(--border-card);">
+          <img id="img-uptown" src="assets/thumb_uptown.jpg" alt="Uptown Mall" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20"></div>
 
           <!-- Top tags -->
           <div class="relative z-10 flex items-center justify-between">
-            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-200 border border-amber-300/30 shadow-sm">BGC · Uptown Bonifacio</span>
-            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-emerald-400 border border-emerald-400/40 flex items-center space-x-1.5">
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-200 border border-amber-300/30 shadow-sm flex items-center space-x-1">
+              <svg class="w-3 h-3 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span>BGC · Uptown Bonifacio</span>
+            </span>
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-emerald-400 border border-emerald-400/40 flex items-center space-x-1.5 shadow-sm">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
-              <span>● Live Status</span>
+              <span>Live 24 Bays</span>
             </span>
           </div>
 
           <!-- Bottom info -->
           <div class="relative z-10">
-            <h2 class="font-serif font-black text-lg text-white drop-shadow-md">Uptown Mall</h2>
-            <div class="flex items-center justify-between text-[11px] font-bold text-slate-200 pt-1.5 mt-1 border-t border-white/15">
-              <span class="text-amber-200">Decks: B1, B2, B3</span>
-              <span class="text-white bg-black/75 px-2 py-0.5 rounded-md border border-white/15 shadow">₱50 flat 3h</span>
+            <h2 class="font-serif font-black text-lg text-white">Uptown Mall</h2>
+            <div class="flex items-center justify-between text-[11px] font-bold text-slate-200 pt-1.5 mt-1 border-t border-white/20">
+              <span class="text-amber-200 flex items-center space-x-1">
+                <svg class="w-3 h-3 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                <span>Levels B1, B2, B3</span>
+              </span>
+              <span class="text-white bg-black/70 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/20 shadow-sm font-mono">From ₱50 / 3 hrs</span>
             </div>
           </div>
         </div>
 
         <!-- Card 3: Eastwood Mall -->
-        <div onclick="handleTownshipClick('eastwood')" class="group relative rounded-3xl overflow-hidden cursor-pointer border shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 h-44 flex flex-col justify-between p-4 bg-slate-900" style="border-color: var(--border-card);">
-          <img id="img-eastwood" src="assets/thumb_eastwood.jpg" alt="Eastwood Mall" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-75" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
+        <div onclick="handleTownshipClick('eastwood')" class="group relative rounded-3xl overflow-hidden cursor-pointer border shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 h-44 flex flex-col justify-between p-4 bg-slate-900" style="border-color: var(--border-card);">
+          <img id="img-eastwood" src="assets/thumb_eastwood.jpg" alt="Eastwood Mall" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20"></div>
 
           <!-- Top tags -->
           <div class="relative z-10 flex items-center justify-between">
-            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-200 border border-amber-300/30 shadow-sm">Quezon City · Eastwood City</span>
-            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-emerald-400 border border-emerald-400/40 flex items-center space-x-1.5">
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-200 border border-amber-300/30 shadow-sm flex items-center space-x-1">
+              <svg class="w-3 h-3 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span>Quezon City · Eastwood City</span>
+            </span>
+            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-emerald-400 border border-emerald-400/40 flex items-center space-x-1.5 shadow-sm">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
-              <span>● Live Status</span>
+              <span>Live 24 Bays</span>
             </span>
           </div>
 
           <!-- Bottom info -->
           <div class="relative z-10">
-            <h2 class="font-serif font-black text-lg text-white drop-shadow-md">Eastwood Mall</h2>
-            <div class="flex items-center justify-between text-[11px] font-bold text-slate-200 pt-1.5 mt-1 border-t border-white/15">
-              <span class="text-amber-200">Decks: B1, B2, B3</span>
-              <span class="text-white bg-black/75 px-2 py-0.5 rounded-md border border-white/15 shadow">₱60 weekend flat</span>
+            <h2 class="font-serif font-black text-lg text-white">Eastwood Mall</h2>
+            <div class="flex items-center justify-between text-[11px] font-bold text-slate-200 pt-1.5 mt-1 border-t border-white/20">
+              <span class="text-amber-200 flex items-center space-x-1">
+                <svg class="w-3 h-3 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                <span>Levels B1, B2, B3</span>
+              </span>
+              <span class="text-white bg-black/70 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/20 shadow-sm font-mono">From ₱60 / 3 hrs</span>
             </div>
           </div>
         </div>
@@ -423,11 +476,11 @@
       <!-- Footer Guarantees -->
       <footer class="pt-3 pb-1 text-center text-xs space-y-1 font-medium border-t" style="border-color: var(--border-card); color: var(--text-secondary);">
         <p class="flex items-center justify-center space-x-1.5">
-          <span class="text-emerald-600 font-bold">✓</span>
+          <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
           <span>Tier A Verified Megaworld Parking Tariff Rates</span>
         </p>
         <p class="flex items-center justify-center space-x-1.5">
-          <span class="text-emerald-600 font-bold">✓</span>
+          <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
           <span>15-Minute Free Drop-off / Pick-up Grace Window</span>
         </p>
       </footer>
@@ -446,8 +499,10 @@
             <span class="text-[10px] font-bold uppercase tracking-wider" style="color: var(--accent-champagne);">General Information & Tariffs</span>
             <h3 id="modalTownshipTitle" class="font-serif font-black text-lg text-slate-900 mt-0.5" style="color: var(--text-primary);">Venice Grand Canal Mall</h3>
           </div>
-          <button onclick="document.getElementById('tariffModal').classList.add('hidden')" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center text-sm font-bold transition-colors" style="color: var(--text-primary);">
-            &times;
+          <button onclick="document.getElementById('tariffModal').classList.add('hidden')" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center text-sm font-bold transition-colors" style="color: var(--text-primary);" title="Close Notice">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
           </button>
         </div>
 
@@ -473,8 +528,11 @@
         </div>
 
         <!-- Direct Proceed Action to Step 3 -->
-        <button onclick="proceedToLiveStatus()" class="w-full py-3.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-serif font-black text-xs uppercase tracking-wider active:scale-95 transition-all shadow-lg">
-          Proceed to Live Deck Map &rarr;
+        <button onclick="proceedToLiveStatus()" class="w-full py-3.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-serif font-black text-xs uppercase tracking-wider active:scale-95 transition-all shadow-lg flex items-center justify-center space-x-2">
+          <span>Proceed to Live Deck Map</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+          </svg>
         </button>
       </div>
     </div>
@@ -488,28 +546,32 @@
       <!-- Sub-bar: Location Tag & Guidelines Button -->
       <div class="px-4 py-2.5 border-b flex items-center justify-between sticky top-0 z-30 backdrop-blur-md" style="background-color: var(--bg-card); border-color: var(--border-card);">
         <div class="flex items-center space-x-2">
-          <button onclick="backToTownshipSelect()" class="text-xs font-bold hover:underline flex items-center space-x-1" style="color: var(--accent-gold);">
-            <span>←</span>
+          <button onclick="backToTownshipSelect()" class="w-8 h-8 rounded-full border flex items-center justify-center transition-all active:scale-95" style="background-color: var(--bg-card-subtle); border-color: var(--border-card); color: var(--accent-gold);" title="Back to Townships">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+            </svg>
           </button>
-          <svg class="w-4 h-4" style="color: var(--accent-gold);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-          </svg>
-          <span id="townshipLocationTag" class="text-xs font-bold" style="color: var(--text-primary);">McKinley Hill, Taguig</span>
+          <div class="flex items-center space-x-1.5">
+            <svg class="w-4 h-4" style="color: var(--accent-gold);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span id="townshipLocationTag" class="text-xs font-bold" style="color: var(--text-primary);">McKinley Hill, Taguig</span>
+          </div>
         </div>
 
         <div class="flex items-center space-x-2">
           <!-- Guidelines & Rates button -->
-          <button onclick="document.getElementById('tariffModal').classList.remove('hidden')" class="text-xs font-bold flex items-center space-x-1.5 px-3 py-1 rounded-full border shadow-sm active:scale-95 transition-transform" style="background-color: var(--accent-badge-bg); border-color: var(--border-accent); color: var(--accent-gold);">
+          <button onclick="document.getElementById('tariffModal').classList.remove('hidden')" class="text-xs font-bold flex items-center space-x-1.5 px-3 py-1.5 rounded-full border shadow-sm active:scale-95 transition-transform" style="background-color: var(--accent-badge-bg); border-color: var(--border-accent); color: var(--accent-gold);">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            <span>Guidelines & Rates</span>
+            <span>Rates</span>
           </button>
 
           <!-- Quick Theme Toggle in Subbar -->
-          <button onclick="toggleThemeQuick()" class="w-7 h-7 rounded-full border flex items-center justify-center transition-colors" style="background-color: var(--bg-card); border-color: var(--border-card); color: var(--text-secondary);" title="Toggle App Theme (Light / Dark)">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button onclick="toggleThemeQuick()" class="w-8 h-8 rounded-full border flex items-center justify-center transition-colors" style="background-color: var(--bg-card); border-color: var(--border-card); color: var(--text-secondary);" title="Toggle App Theme (Light / Dark)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
             </svg>
           </button>
@@ -535,9 +597,9 @@
             </div>
 
             <!-- LIVE PST Reset Button -->
-            <button onclick="resetToRealTimePst()" class="text-xs font-bold px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-all active:scale-95 shadow-sm flex items-center space-x-1.5">
+            <button onclick="resetToRealTimePst()" class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white transition-all active:scale-95 shadow-sm flex items-center space-x-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-white pulse-dot"></span>
-              <span>● LIVE PST</span>
+              <span>LIVE PST</span>
             </button>
           </div>
 
@@ -568,13 +630,13 @@
           </div>
         </div>
 
-        <!-- MODE SWITCHER PILL -->
-        <div class="flex items-center justify-between p-1 rounded-2xl border" style="background-color: var(--bg-card); border-color: var(--border-card);">
-          <button onclick="setDashboardMode('live')" id="btnModeLive" class="w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 bg-emerald-600 text-white shadow-sm font-black">
+        <!-- MODE SWITCHER PILL (Airbnb-Style Capsule) -->
+        <div class="flex items-center p-1 rounded-full border shadow-sm" style="background-color: var(--bg-card); border-color: var(--border-card);">
+          <button onclick="setDashboardMode('live')" id="btnModeLive" class="w-1/2 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center space-x-1.5 bg-emerald-600 text-white shadow-sm font-black">
             <span class="w-2 h-2 rounded-full bg-white pulse-dot"></span>
-            <span>Live 3D Deck Map</span>
+            <span>Live 3D Deck</span>
           </button>
-          <button onclick="setDashboardMode('forecast')" id="btnModeForecast" class="w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+          <button onclick="setDashboardMode('forecast')" id="btnModeForecast" class="w-1/2 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
             </svg>
@@ -669,14 +731,27 @@
                   </div>
                 </div>
 
-                <!-- CENTRAL DRIVE AISLE (ENTRY &rarr; / ONE WAY &rarr; / &rarr; EXIT) -->
+                <!-- CENTRAL DRIVE AISLE (ENTRY -> / ONE WAY -> / -> EXIT with sleek SVG arrows) -->
                 <div class="deck-aisle h-8 border-y border-dashed flex items-center justify-between px-2.5 pointer-events-none my-0.5 transition-colors">
                   <div class="flex items-center space-x-1 text-[8px] font-mono font-bold tracking-wider">
                     <span class="w-3 h-2 rounded-sm border border-current opacity-70"></span>
-                    <span>ENTRY &rarr;</span>
+                    <span>ENTRY</span>
+                    <svg class="w-2.5 h-2.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
                   </div>
-                  <span class="text-[8px] font-mono font-bold tracking-widest">ONE WAY &rarr;</span>
-                  <span class="text-[8px] font-mono font-bold">&rarr; EXIT</span>
+                  <div class="flex items-center space-x-1 text-[8px] font-mono font-bold tracking-widest">
+                    <span>ONE WAY</span>
+                    <svg class="w-2.5 h-2.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                  </div>
+                  <div class="flex items-center space-x-1 text-[8px] font-mono font-bold">
+                    <svg class="w-2.5 h-2.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                    <span>EXIT</span>
+                  </div>
                 </div>
 
                 <!-- BOTTOM BANK: 2 Rows of 6 Stalls (Bays 13-18 & 19-24) -->
@@ -725,8 +800,10 @@
                 <span class="text-[10px] font-bold uppercase tracking-wider" style="color: var(--accent-champagne);">Live Bay Inspection Telemetry</span>
                 <h4 id="inspectSlotCode" class="font-serif font-black text-base text-slate-900 mt-0.5" style="color: var(--text-primary);">Bay 4F-08</h4>
               </div>
-              <button onclick="document.getElementById('bayInspectorSheet').classList.add('hidden'); liveSimulation.inspectedStallId = null;" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-white px-2 py-1">
-                &times; Close
+              <button onclick="document.getElementById('bayInspectorSheet').classList.add('hidden'); liveSimulation.inspectedStallId = null;" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center transition-colors" style="color: var(--text-primary);" title="Close Inspector">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
               </button>
             </div>
 
@@ -829,9 +906,12 @@
             </div>
 
             <!-- Quick Switch to Live Deck Action -->
-            <button onclick="resetToRealTimePst()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider active:scale-95 transition-all shadow-md flex items-center justify-center space-x-2">
+            <button onclick="resetToRealTimePst()" class="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider active:scale-95 transition-all shadow-md flex items-center justify-center space-x-2">
               <span class="w-2 h-2 rounded-full bg-white pulse-dot"></span>
-              <span>● View Current Live 3D Deck Map &rarr;</span>
+              <span>View Current Live 3D Deck Map</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+              </svg>
             </button>
           </div>
 
@@ -852,7 +932,12 @@
             </div>
           </div>
 
-          <span class="text-xs font-black hover:underline" style="color: var(--accent-gold);">Open Estimator &rarr;</span>
+          <div class="flex items-center space-x-1 text-xs font-black" style="color: var(--accent-gold);">
+            <span>Open Estimator</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
         </div>
 
       </div>
@@ -865,8 +950,10 @@
               <span class="text-[10px] font-bold uppercase tracking-wider" style="color: var(--accent-champagne);">Official Tariff Engine</span>
               <h3 class="font-serif font-black text-lg text-slate-900 mt-0.5" style="color: var(--text-primary);">Dynamic Fee Calculator</h3>
             </div>
-            <button onclick="document.getElementById('calcModal').classList.add('hidden')" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center text-sm font-bold transition-colors" style="color: var(--text-primary);">
-              &times;
+            <button onclick="closeFeeCalculator()" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center transition-colors" style="color: var(--text-primary);" title="Close Calculator">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
             </button>
           </div>
 
@@ -920,6 +1007,40 @@
 
     </div>
 
+    <!-- ====================================================================
+         AIRBNB-STYLE FLOATING BOTTOM NAVIGATION DOCK
+         ==================================================================== -->
+    <nav id="bottomNavDock" class="sticky bottom-0 z-40 w-full border-t backdrop-blur-xl flex items-center justify-around px-3 py-2 shadow-lg transition-colors" style="background-color: var(--bg-card); border-color: var(--border-card);">
+      <button onclick="navDockSelect('townships')" id="dockBtnTownships" class="flex flex-col items-center space-y-1 text-[10px] font-bold py-1 px-3 rounded-xl transition-all" style="color: var(--accent-gold);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+        </svg>
+        <span>Townships</span>
+      </button>
+
+      <button onclick="navDockSelect('live')" id="dockBtnLive" class="flex flex-col items-center space-y-1 text-[10px] font-bold py-1 px-3 rounded-xl transition-all" style="color: var(--text-muted);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+        </svg>
+        <span>Live Deck</span>
+      </button>
+
+      <button onclick="navDockSelect('forecast')" id="dockBtnForecast" class="flex flex-col items-center space-y-1 text-[10px] font-bold py-1 px-3 rounded-xl transition-all" style="color: var(--text-muted);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+        </svg>
+        <span>Forecast</span>
+      </button>
+
+      <button onclick="navDockSelect('tariffs')" id="dockBtnTariffs" class="flex flex-col items-center space-y-1 text-[10px] font-bold py-1 px-3 rounded-xl transition-all" style="color: var(--text-muted);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+        </svg>
+        <span>Tariffs</span>
+      </button>
+    </nav>
+
   </div>
 
   <!-- JAVASCRIPT SYSTEM ENGINE (Backed by parking.db, predictor.py, revenue_engine.py & real_data_pipeline.py) -->
@@ -947,18 +1068,18 @@
         },
         tariffs: { first_3hr_flat: 50, succeeding_hr: 20, overnight_surcharge: 150, grace_period_mins: 15 },
         bulletsCol1: [
-          "• <b>₱50.00</b> First 3 hrs (Base)",
-          "• <b>₱20.00</b> Each succeeding hr",
-          "• <b>₱150.00</b> Overnight surcharge",
-          "• <b>Cutoff:</b> 12MN in / 12NN out",
-          "• <b>Validation:</b> Verified at exit barrier"
+          "<b>₱50.00</b> First 3 hrs (Base)",
+          "<b>₱20.00</b> Each succeeding hr",
+          "<b>₱150.00</b> Overnight surcharge",
+          "<b>Cutoff:</b> 12MN in / 12NN out",
+          "<b>Validation:</b> Verified at exit barrier"
         ],
         bulletsCol2: [
-          "• <b>15-Min Free</b> Drop-off grace",
-          "• <b>2.10m Max</b> height clearance",
-          "• <b>Level 4F</b> Open-Air deck open",
-          "• <b>Cashless:</b> GCash, Maya, RFID",
-          "• <b>Live Weather:</b> 28°C Partly Cloudy"
+          "<b>15-Min Free</b> Drop-off grace",
+          "<b>2.10m Max</b> height clearance",
+          "<b>Level 4F</b> Open-Air deck open",
+          "<b>Cashless:</b> GCash, Maya, RFID",
+          "<b>Live Weather:</b> 28°C Partly Cloudy"
         ]
       },
       uptown: {
@@ -977,18 +1098,18 @@
         },
         tariffs: { first_3hr_flat: 50, "4th_to_7th_hr": 15, "7th_hr_plus_am": 100, "7th_hr_plus_pm": 30, overnight_surcharge: 200, grace_period_mins: 15 },
         bulletsCol1: [
-          "• <b>₱50.00</b> First 3 hrs (Base)",
-          "• <b>₱15.00/hr</b> for 4th to 7th hr",
-          "• <b>₱100.00/hr</b> (AM entry 7h+)",
-          "• <b>₱30.00/hr</b> (PM entry 7h+)",
-          "• <b>₱200.00</b> Overnight charge"
+          "<b>₱50.00</b> First 3 hrs (Base)",
+          "<b>₱15.00/hr</b> for 4th to 7th hr",
+          "<b>₱100.00/hr</b> (AM entry 7h+)",
+          "<b>₱30.00/hr</b> (PM entry 7h+)",
+          "<b>₱200.00</b> Overnight charge"
         ],
         bulletsCol2: [
-          "• <b>15-Min</b> Drop-off grace period",
-          "• <b>2.05m</b> Basement height limit",
-          "• <b>Cinema wing</b> elevator in B1",
-          "• <b>Direct access:</b> The Island BGC",
-          "• <b>Live Weather:</b> 29°C Clear Sky"
+          "<b>15-Min</b> Drop-off grace period",
+          "<b>2.05m</b> Basement height limit",
+          "<b>Cinema wing</b> elevator in B1",
+          "<b>Direct access:</b> The Island BGC",
+          "<b>Live Weather:</b> 29°C Clear Sky"
         ]
       },
       eastwood: {
@@ -1007,18 +1128,18 @@
         },
         tariffs: { first_3hr_flat: 60, succeeding_hr_weekday: 20, weekend_holiday_flat: 60, overnight_surcharge: 150, grace_period_mins: 15 },
         bulletsCol1: [
-          "• <b>₱60.00 Flat</b> First 3 hrs",
-          "• <b>₱20.00</b> Succeeding (Weekday)",
-          "• <b>₱60.00 Flat</b> All Day (Weekends)",
-          "• <b>Statutory Holidays:</b> ₱60 Flat",
-          "• <b>₱150.00</b> Overnight fee"
+          "<b>₱60.00 Flat</b> First 3 hrs",
+          "<b>₱20.00</b> Succeeding (Weekday)",
+          "<b>₱60.00 Flat</b> All Day (Weekends)",
+          "<b>Statutory Holidays:</b> ₱60 Flat",
+          "<b>₱150.00</b> Overnight fee"
         ],
         bulletsCol2: [
-          "• <b>15-Min Free</b> Drop-off grace",
-          "• <b>2.10m Max</b> height limit",
-          "• <b>Direct access:</b> Citywalk plaza",
-          "• <b>Automated pay</b> kiosk in B1",
-          "• <b>Live Weather:</b> 28°C Fair"
+          "<b>15-Min Free</b> Drop-off grace",
+          "<b>2.10m Max</b> height limit",
+          "<b>Direct access:</b> Citywalk plaza",
+          "<b>Automated pay</b> kiosk in B1",
+          "<b>Live Weather:</b> 28°C Fair"
         ]
       }
     };
@@ -1255,16 +1376,18 @@
       col1.innerHTML = '';
       col2.innerHTML = '';
 
-      // Use innerHTML so that <b>...</b> highlights are rendered cleanly
+      // Use innerHTML with clean gold indicators and stripped bullet points
       data.bulletsCol1.forEach(b => {
         const li = document.createElement('li');
-        li.innerHTML = b;
+        li.className = "flex items-start space-x-2 py-0.5";
+        li.innerHTML = `<span class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style="background-color: var(--accent-gold);"></span><span>${b.replace(/^[\u2022\s]+/, '')}</span>`;
         col1.appendChild(li);
       });
 
       data.bulletsCol2.forEach(b => {
         const li = document.createElement('li');
-        li.innerHTML = b;
+        li.className = "flex items-start space-x-2 py-0.5";
+        li.innerHTML = `<span class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style="background-color: var(--accent-gold);"></span><span>${b.replace(/^[\u2022\s]+/, '')}</span>`;
         col2.appendChild(li);
       });
 
@@ -1287,11 +1410,51 @@
       populateForecastZoneSelect();
       resetToRealTimePst();
       applyDeckTheme();
+      syncDockActive(activeDashboardMode);
     }
 
     function backToTownshipSelect() {
       document.getElementById('pageLiveStatus').classList.add('hidden');
       document.getElementById('pageTownshipSelect').classList.remove('hidden');
+      syncDockActive('townships');
+    }
+
+    /* ==========================================================================
+       5.1 AIRBNB-STYLE BOTTOM NAVIGATION DOCK CONTROLLER
+       ========================================================================== */
+    function syncDockActive(tab) {
+      const tabs = ['townships', 'live', 'forecast', 'tariffs'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`dockBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (!btn) return;
+        if (t === tab) {
+          btn.style.color = 'var(--accent-gold)';
+          btn.classList.add('font-black');
+        } else {
+          btn.style.color = 'var(--text-muted)';
+          btn.classList.remove('font-black');
+        }
+      });
+    }
+
+    function navDockSelect(tab) {
+      if (tab === 'townships') {
+        backToTownshipSelect();
+      } else if (tab === 'live') {
+        const isSelectPage = !document.getElementById('pageTownshipSelect').classList.contains('hidden');
+        if (isSelectPage) {
+          proceedToLiveStatus();
+        }
+        setDashboardMode('live');
+      } else if (tab === 'forecast') {
+        const isSelectPage = !document.getElementById('pageTownshipSelect').classList.contains('hidden');
+        if (isSelectPage) {
+          proceedToLiveStatus();
+        }
+        setDashboardMode('forecast');
+      } else if (tab === 'tariffs') {
+        openFeeCalculator();
+      }
     }
 
     /* ==========================================================================
@@ -1334,6 +1497,7 @@
       }
 
       updateDashboardModeUI();
+      syncDockActive(activeDashboardMode);
       recalculateSimulation();
     }
 
@@ -1361,12 +1525,14 @@
 
       renderLevelSwitcher();
       updateDashboardModeUI();
+      syncDockActive('live');
       recalculateSimulation();
     }
 
     function setDashboardMode(mode) {
       activeDashboardMode = mode;
       updateDashboardModeUI();
+      syncDockActive(mode);
       recalculateSimulation();
     }
 
@@ -1379,13 +1545,13 @@
       if (activeDashboardMode === 'forecast') {
         secLive.classList.add('hidden');
         secForecast.classList.remove('hidden');
-        btnForecast.className = "w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 bg-amber-600 text-white shadow-sm font-black";
-        btnLive.className = "w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white";
+        btnForecast.className = "w-1/2 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center space-x-1.5 bg-amber-600 text-white shadow-sm font-black";
+        btnLive.className = "w-1/2 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white";
       } else {
         secLive.classList.remove('hidden');
         secForecast.classList.add('hidden');
-        btnLive.className = "w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 bg-emerald-600 text-white shadow-sm font-black";
-        btnForecast.className = "w-1/2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white";
+        btnLive.className = "w-1/2 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center space-x-1.5 bg-emerald-600 text-white shadow-sm font-black";
+        btnForecast.className = "w-1/2 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white";
       }
     }
 
@@ -2149,6 +2315,13 @@
       if (timeInput) timeInput.value = selectedTime;
       computeFee();
       document.getElementById('calcModal').classList.remove('hidden');
+      syncDockActive('tariffs');
+    }
+
+    function closeFeeCalculator() {
+      document.getElementById('calcModal').classList.add('hidden');
+      const isSelectPage = !document.getElementById('pageTownshipSelect').classList.contains('hidden');
+      syncDockActive(isSelectPage ? 'townships' : activeDashboardMode);
     }
 
     function computeFee() {

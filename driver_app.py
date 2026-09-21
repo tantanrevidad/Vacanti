@@ -282,18 +282,18 @@ def load_backend_core_payload():
             },
             "tariffs": revenue_config.PARKING_RATES["McKinley Hill"]["mall"],
             "bulletsCol1": [
-                f"• <b>₱{revenue_config.PARKING_RATES['McKinley Hill']['mall']['first_3hr_flat']:.2f}</b> First 3 hrs (Base)",
-                f"• <b>₱{revenue_config.PARKING_RATES['McKinley Hill']['mall']['succeeding_hr']:.2f}</b> Each succeeding hr",
-                f"• <b>₱{revenue_config.PARKING_RATES['McKinley Hill']['mall']['overnight_surcharge']:.2f}</b> Overnight surcharge",
-                "• <b>Cutoff:</b> 12MN in / 12NN out",
-                "• <b>Validation:</b> Verified at exit barrier"
+                f"<b>₱{revenue_config.PARKING_RATES['McKinley Hill']['mall']['first_3hr_flat']:.2f}</b> First 3 hrs (Base)",
+                f"<b>₱{revenue_config.PARKING_RATES['McKinley Hill']['mall']['succeeding_hr']:.2f}</b> Each succeeding hr",
+                f"<b>₱{revenue_config.PARKING_RATES['McKinley Hill']['mall']['overnight_surcharge']:.2f}</b> Overnight surcharge",
+                "<b>Cutoff:</b> 12MN in / 12NN out",
+                "<b>Validation:</b> Verified at exit barrier"
             ],
             "bulletsCol2": [
-                f"• <b>{revenue_config.PARKING_RATES['McKinley Hill']['mall']['grace_period_mins']}-Min Free</b> Drop-off grace",
-                "• <b>2.10m Max</b> height clearance",
-                "• <b>Level 4F</b> Open-Air deck open",
-                "• <b>Cashless:</b> GCash, Maya, RFID",
-                "• <b>Live Weather:</b> 28°C Partly Cloudy"
+                f"<b>{revenue_config.PARKING_RATES['McKinley Hill']['mall']['grace_period_mins']}-Min Free</b> Drop-off grace",
+                "<b>2.10m Max</b> height clearance",
+                "<b>Level 4F</b> Open-Air deck open",
+                "<b>Cashless:</b> GCash, Maya, RFID",
+                "<b>Live Weather:</b> 28°C Partly Cloudy"
             ]
         },
         "uptown": {
@@ -312,18 +312,18 @@ def load_backend_core_payload():
             },
             "tariffs": revenue_config.PARKING_RATES["Uptown Bonifacio"]["mall"],
             "bulletsCol1": [
-                f"• <b>₱{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['first_3hr_flat']:.2f}</b> First 3 hrs (Base)",
-                f"• <b>₱{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['4th_to_7th_hr']:.2f}/hr</b> for 4th to 7th hr",
-                f"• <b>₱{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['7th_hr_plus_am']:.2f}/hr</b> (AM entry 7h+)",
-                f"• <b>₱{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['7th_hr_plus_pm']:.2f}/hr</b> (PM entry 7h+)",
-                f"• <b>₱{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['overnight_surcharge']:.2f}</b> Overnight charge"
+                f"<b>₱{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['first_3hr_flat']:.2f}</b> First 3 hrs (Base)",
+                f"<b>₱{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['4th_to_7th_hr']:.2f}/hr</b> for 4th to 7th hr",
+                f"<b>₱{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['7th_hr_plus_am']:.2f}/hr</b> (AM entry 7h+)",
+                f"<b>₱{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['7th_hr_plus_pm']:.2f}/hr</b> (PM entry 7h+)",
+                f"<b>₱{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['overnight_surcharge']:.2f}</b> Overnight charge"
             ],
             "bulletsCol2": [
-                f"• <b>{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['grace_period_mins']}-Min</b> Drop-off grace period",
-                "• <b>2.05m</b> Basement height limit",
-                "• <b>Cinema wing</b> elevator in B1",
-                "• <b>Direct access:</b> The Island BGC",
-                "• <b>Live Weather:</b> 29°C Clear Sky"
+                f"<b>{revenue_config.PARKING_RATES['Uptown Bonifacio']['mall']['grace_period_mins']}-Min</b> Drop-off grace period",
+                "<b>2.05m</b> Basement height limit",
+                "<b>Cinema wing</b> elevator in B1",
+                "<b>Direct access:</b> The Island BGC",
+                "<b>Live Weather:</b> 29°C Clear Sky"
             ]
         },
         "eastwood": {
@@ -342,18 +342,18 @@ def load_backend_core_payload():
             },
             "tariffs": revenue_config.PARKING_RATES["Eastwood City"]["mall"],
             "bulletsCol1": [
-                f"• <b>₱{revenue_config.PARKING_RATES['Eastwood City']['mall']['first_3hr_flat']:.2f} Flat</b> First 3 hrs",
-                f"• <b>₱{revenue_config.PARKING_RATES['Eastwood City']['mall']['succeeding_hr_weekday']:.2f}</b> Succeeding (Weekday)",
-                f"• <b>₱{revenue_config.PARKING_RATES['Eastwood City']['mall']['weekend_holiday_flat']:.2f} Flat</b> All Day (Weekends)",
-                f"• <b>Statutory Holidays:</b> ₱{revenue_config.PARKING_RATES['Eastwood City']['mall']['weekend_holiday_flat']:.2f} Flat",
-                f"• <b>₱{revenue_config.PARKING_RATES['Eastwood City']['mall']['overnight_surcharge']:.2f}</b> Overnight fee"
+                f"<b>₱{revenue_config.PARKING_RATES['Eastwood City']['mall']['first_3hr_flat']:.2f} Flat</b> First 3 hrs",
+                f"<b>₱{revenue_config.PARKING_RATES['Eastwood City']['mall']['succeeding_hr_weekday']:.2f}</b> Succeeding (Weekday)",
+                f"<b>₱{revenue_config.PARKING_RATES['Eastwood City']['mall']['weekend_holiday_flat']:.2f} Flat</b> All Day (Weekends)",
+                f"<b>Statutory Holidays:</b> ₱{revenue_config.PARKING_RATES['Eastwood City']['mall']['weekend_holiday_flat']:.2f} Flat",
+                f"<b>₱{revenue_config.PARKING_RATES['Eastwood City']['mall']['overnight_surcharge']:.2f}</b> Overnight fee"
             ],
             "bulletsCol2": [
-                f"• <b>{revenue_config.PARKING_RATES['Eastwood City']['mall']['grace_period_mins']}-Min Free</b> Drop-off grace",
-                "• <b>2.10m Max</b> height limit",
-                "• <b>Direct access:</b> Citywalk plaza",
-                "• <b>Automated pay</b> kiosk in B1",
-                "• <b>Live Weather:</b> 28°C Fair"
+                f"<b>{revenue_config.PARKING_RATES['Eastwood City']['mall']['grace_period_mins']}-Min Free</b> Drop-off grace",
+                "<b>2.10m Max</b> height limit",
+                "<b>Direct access:</b> Citywalk plaza",
+                "<b>Automated pay</b> kiosk in B1",
+                "<b>Live Weather:</b> 28°C Fair"
             ]
         }
     }
@@ -403,7 +403,7 @@ def get_live_payload():
                 "is_raining": bool(w.get("is_raining", False))
             }
             if k in payload["townships"]:
-                payload["townships"][k]["bulletsCol2"][4] = f"• <b>Live Weather:</b> {temp}°C {cond}"
+                payload["townships"][k]["bulletsCol2"][4] = f"<b>Live Weather:</b> {temp}°C {cond}"
         except Exception:
             weather[k] = {"temp": 28.5, "condition": "Partly Cloudy", "rain_mm": 0.0, "is_raining": False}
 
