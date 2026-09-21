@@ -10,7 +10,7 @@ Run with:  streamlit run app.py
 import json
 import os
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import time
@@ -1607,45 +1607,141 @@ def handle_date_change(key_prefix: str):
         st.session_state.sim_time = datetime.combine(d, st.session_state.sim_time.time())
 
 
-def handle_time_change(key_prefix: str):
-    t = st.session_state.get(f"{key_prefix}_time_input")
-    if t:
-        st.session_state.sim_time = datetime.combine(st.session_state.sim_time.date(), t)
+def handle_hour_change(key_prefix: str):
+    h = st.session_state.get(f"{key_prefix}_hour_select")
+    if h is not None:
+        st.session_state.sim_time = st.session_state.sim_time.replace(hour=int(h))
 
 
-def render_hero_clock_and_setter(key_prefix="tab1"):
+def handle_minute_change(key_prefix: str):
+    m = st.session_state.get(f"{key_prefix}_minute_select")
+    if m is not None:
+        st.session_state.sim_time = st.session_state.sim_time.replace(minute=int(m), second=0)
+
+
+def handle_quick_jump(jump_type: str, key_prefix: str):
+    curr = st.session_state.sim_time
+    if jump_type == "now":
+        new_dt = datetime.now().replace(microsecond=0)
+    elif jump_type == "m1h":
+        new_dt = curr - timedelta(hours=1)
+    elif jump_type == "p1h":
+        new_dt = curr + timedelta(hours=1)
+    elif jump_type == "morning":
+        new_dt = curr.replace(hour=9, minute=0, second=0)
+    elif jump_type == "lunch":
+        new_dt = curr.replace(hour=12, minute=0, second=0)
+    elif jump_type == "peak":
+        new_dt = curr.replace(hour=16, minute=0, second=0)
+    else:
+        return
+
+    st.session_state.sim_time = new_dt
+    st.session_state[f"{key_prefix}_date_input"] = new_dt.date()
+    st.session_state[f"{key_prefix}_hour_select"] = new_dt.hour
+    min_options = [0, 15, 30, 45]
+    st.session_state[f"{key_prefix}_minute_select"] = min(min_options, key=lambda m: abs(m - new_dt.minute))
+
+
+def handle_apply_custom_time(key_prefix: str):
+    val = st.session_state.get(f"{key_prefix}_direct_time_str", "").strip()
+    if val:
+        parsed = parse_time_string(val)
+        if parsed:
+            new_dt = datetime.combine(st.session_state.sim_time.date(), parsed)
+            st.session_state.sim_time = new_dt
+            st.session_state[f"{key_prefix}_date_input"] = new_dt.date()
+            st.session_state[f"{key_prefix}_hour_select"] = new_dt.hour
+            min_options = [0, 15, 30, 45]
+            st.session_state[f"{key_prefix}_minute_select"] = min(min_options, key=lambda m: abs(m - new_dt.minute))
+            st.session_state[f"{key_prefix}_direct_time_str"] = ""
+        else:
+            st.toast("Unrecognized format. Please try e.g. 14:30 or 2:30 PM.")
+
+
+def render_hero_clock_and_setter(key_prefix="tab2"):
     # ── Prominent Large Hero Clock (Date and Time Centered) ──
     formatted_time = st.session_state.sim_time.strftime("%I:%M %p")
     formatted_date = st.session_state.sim_time.strftime("%A, %B %d, %Y")
 
     st.markdown(f"""
     <div class="hero-clock-container">
-        <div class="hero-clock-eyebrow">PHILIPPINE STANDARD TIME (PST) · REAL-TIME SYSTEM CLOCK</div>
+        <div class="hero-clock-eyebrow">PHILIPPINE STANDARD TIME (PST) · TARGET FORECAST TIME</div>
         <div class="hero-clock-time">{formatted_time}</div>
         <div class="hero-clock-date">{formatted_date}</div>
     </div>
     """, unsafe_allow_html=True)
 
     # ── Clean Centered Date & Time Selectors ──
-    _, center_col, _ = st.columns([1, 2, 1])
+    _, center_col, _ = st.columns([1, 2.8, 1])
     with center_col:
-        col_date, col_time = st.columns(2)
+        col_date, col_hour, col_min = st.columns([1.5, 1.4, 1.1])
         with col_date:
             st.date_input(
-                "Date",
+                "Calendar Date",
                 value=st.session_state.sim_time.date(),
                 key=f"{key_prefix}_date_input",
                 on_change=handle_date_change,
                 args=(key_prefix,),
             )
-        with col_time:
-            st.time_input(
-                "Time",
-                value=st.session_state.sim_time.time(),
-                key=f"{key_prefix}_time_input",
-                on_change=handle_time_change,
+        with col_hour:
+            curr_h = st.session_state.sim_time.hour
+            st.selectbox(
+                "Arrival Hour",
+                options=list(range(24)),
+                index=curr_h,
+                format_func=lambda h: f"{12 if h % 12 == 0 else h % 12:02d} {'AM' if h < 12 else 'PM'} ({h:02d}:00)",
+                key=f"{key_prefix}_hour_select",
+                on_change=handle_hour_change,
                 args=(key_prefix,),
             )
+        with col_min:
+            min_options = [0, 15, 30, 45]
+            curr_m = st.session_state.sim_time.minute
+            min_idx = min(range(len(min_options)), key=lambda i: abs(min_options[i] - curr_m))
+            st.selectbox(
+                "Minute",
+                options=min_options,
+                index=min_idx,
+                format_func=lambda m: f":{m:02d}",
+                key=f"{key_prefix}_minute_select",
+                on_change=handle_minute_change,
+                args=(key_prefix,),
+            )
+
+        # Quick Time Jump Controls
+        st.markdown(
+            "<div style='font-size:0.75rem; font-weight:700; color:var(--text-secondary); "
+            "text-transform:uppercase; letter-spacing:0.06em; margin-top:8px; margin-bottom:4px;'>"
+            "Quick Time Jump</div>",
+            unsafe_allow_html=True,
+        )
+        qb1, qb2, qb3, qb4, qb5, qb6 = st.columns(6)
+        with qb1:
+            st.button("Live Now", key=f"{key_prefix}_q_now", on_click=handle_quick_jump, args=("now", key_prefix), use_container_width=True, help="Reset to current PST time")
+        with qb2:
+            st.button("-1 Hour", key=f"{key_prefix}_q_m1h", on_click=handle_quick_jump, args=("m1h", key_prefix), use_container_width=True, help="Step back 1 hour")
+        with qb3:
+            st.button("+1 Hour", key=f"{key_prefix}_q_p1h", on_click=handle_quick_jump, args=("p1h", key_prefix), use_container_width=True, help="Advance 1 hour")
+        with qb4:
+            st.button("9 AM (Morning)", key=f"{key_prefix}_q_morning", on_click=handle_quick_jump, args=("morning", key_prefix), use_container_width=True, help="Jump to 9:00 AM Morning Peak")
+        with qb5:
+            st.button("12 PM (Lunch)", key=f"{key_prefix}_q_lunch", on_click=handle_quick_jump, args=("lunch", key_prefix), use_container_width=True, help="Jump to 12:00 PM Lunch Peak")
+        with qb6:
+            st.button("4 PM (Peak)", key=f"{key_prefix}_q_peak", on_click=handle_quick_jump, args=("peak", key_prefix), use_container_width=True, help="Jump to 4:00 PM Afternoon Peak")
+
+        # Direct Time Text Entry Option
+        with st.expander("Direct Time Text Entry (e.g. 14:30, 2:30pm)", expanded=False):
+            t_col1, t_col2 = st.columns([3, 1])
+            with t_col1:
+                st.text_input(
+                    "Custom Time",
+                    placeholder="e.g. 14:30, 2:30pm, 09:15...",
+                    key=f"{key_prefix}_direct_time_str",
+                    label_visibility="collapsed",
+                )
+            with t_col2:
+                st.button("Apply", key=f"{key_prefix}_apply_time", on_click=handle_apply_custom_time, args=(key_prefix,), use_container_width=True)
 
     st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
 

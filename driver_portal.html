@@ -787,11 +787,11 @@
             </div>
 
             <!-- THE BIG PREDICTIVE FORECAST BANNER (Exact Match to media_1789005679807.png) -->
-            <div id="forecastMainBanner" class="rounded-2xl p-5 text-center border shadow-lg transition-all duration-300">
-              <div id="forecastBannerEyebrow" class="text-[11px] font-black uppercase tracking-widest font-mono mb-2">
+            <div id="forecastMainBanner" class="rounded-2xl p-5 text-center border shadow-lg transition-all duration-300" style="border-color: #D97706; background-color: rgba(245, 158, 11, 0.14);">
+              <div id="forecastBannerEyebrow" class="text-[11px] font-black uppercase tracking-widest font-mono mb-2" style="color: #B45309;">
                 FORECAST FOR THURSDAY, SEPTEMBER 10, 2026 · 09:53 AM
               </div>
-              <div id="forecastBannerValue" class="font-serif font-black text-2xl sm:text-3xl tracking-tight text-white drop-shadow">
+              <div id="forecastBannerValue" class="font-serif font-black text-2xl sm:text-3xl tracking-tight transition-colors duration-200" style="color: #78350F;">
                 Uncertain — may be tight
               </div>
             </div>
@@ -1172,6 +1172,10 @@
         if (btnDark) {
           btnDark.className = "px-2.5 py-1 rounded-full flex items-center space-x-1 transition-all text-slate-500 hover:text-slate-900 font-medium";
         }
+      }
+
+      if (typeof recalculateSimulation === 'function') {
+        recalculateSimulation();
       }
     }
 
@@ -1648,29 +1652,69 @@
       const trainedEst = Math.min(Math.max(rawTrained * eventFactor * holidayFactor, 0.05), 0.96);
       const adjustedEst = Math.min(Math.max(trainedEst + 0.05 * (1.0 - trainedEst), 0.08), 0.98);
 
+      const isDark = document.body.classList.contains('dark-theme');
+
       let label = "";
       let bannerBorderColor = "";
       let bannerBgColor = "";
+      let eyebrowColor = "";
+      let valueColor = "";
 
       if (adjustedEst < 0.55) {
         label = "Likely available";
-        bannerBorderColor = "#10B981";
-        bannerBgColor = "rgba(16, 185, 129, 0.12)";
+        if (isDark) {
+          bannerBorderColor = "#10B981";
+          bannerBgColor = "rgba(16, 185, 129, 0.16)";
+          eyebrowColor = "#34D399";
+          valueColor = "#6EE7B7";
+        } else {
+          bannerBorderColor = "#059669";
+          bannerBgColor = "rgba(16, 185, 129, 0.12)";
+          eyebrowColor = "#047857";
+          valueColor = "#065F46";
+        }
       } else if (adjustedEst < 0.80) {
         label = "Uncertain — may be tight";
-        bannerBorderColor = "#F59E0B";
-        bannerBgColor = "rgba(245, 158, 11, 0.12)";
+        if (isDark) {
+          bannerBorderColor = "#F59E0B";
+          bannerBgColor = "rgba(245, 158, 11, 0.16)";
+          eyebrowColor = "#FBBF24";
+          valueColor = "#FDE68A";
+        } else {
+          bannerBorderColor = "#D97706";
+          bannerBgColor = "rgba(245, 158, 11, 0.14)";
+          eyebrowColor = "#B45309";
+          valueColor = "#78350F";
+        }
       } else {
         label = "Unlikely to have space";
-        bannerBorderColor = "#F43F5E";
-        bannerBgColor = "rgba(244, 63, 94, 0.12)";
+        if (isDark) {
+          bannerBorderColor = "#F43F5E";
+          bannerBgColor = "rgba(244, 63, 94, 0.16)";
+          eyebrowColor = "#FB7185";
+          valueColor = "#FECDD3";
+        } else {
+          bannerBorderColor = "#E11D48";
+          bannerBgColor = "rgba(244, 63, 94, 0.12)";
+          eyebrowColor = "#BE123C";
+          valueColor = "#9F1239";
+        }
       }
 
       const banner = document.getElementById('forecastMainBanner');
-      banner.style.borderColor = bannerBorderColor;
-      banner.style.backgroundColor = bannerBgColor;
-      document.getElementById('forecastBannerEyebrow').style.color = bannerBorderColor;
-      document.getElementById('forecastBannerValue').innerText = label;
+      if (banner) {
+        banner.style.borderColor = bannerBorderColor;
+        banner.style.backgroundColor = bannerBgColor;
+      }
+      const eyebrowEl = document.getElementById('forecastBannerEyebrow');
+      if (eyebrowEl) {
+        eyebrowEl.style.color = eyebrowColor;
+      }
+      const valueEl = document.getElementById('forecastBannerValue');
+      if (valueEl) {
+        valueEl.style.color = valueColor;
+        valueEl.innerText = label;
+      }
 
       document.getElementById('predBaseline').innerText = `${Math.round(baselineEst * 100)}%`;
       document.getElementById('predTrained').innerText = `${Math.round(trainedEst * 100)}%`;
