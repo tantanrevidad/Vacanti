@@ -628,10 +628,10 @@
             </div>
           </div>
 
-          <!-- 3D PERSPECTIVE LIVE DECK MAP (With Independent Deck Theme Switcher) -->
-          <div id="deckMainContainer" class="deck-container-dark relative w-full h-[330px] rounded-3xl border-2 shadow-2xl overflow-hidden flex flex-col justify-between p-3.5 transition-all duration-300">
+          <!-- 3D PERSPECTIVE LIVE DECK MAP (Adapts to App Theme) -->
+          <div id="deckMainContainer" class="deck-container-light relative w-full h-[330px] rounded-3xl border-2 shadow-2xl overflow-hidden flex flex-col justify-between p-3.5 transition-all duration-300">
             
-            <!-- Top Watermark & Controls: Floor Badge + Deck Theme Switch + 3D Toggle -->
+            <!-- Top Watermark & Controls: Floor Badge + 3D Toggle -->
             <div class="flex justify-between items-center z-10 pointer-events-none">
               <div class="flex items-center space-x-2 pointer-events-auto">
                 <span id="activeFloorBadge" class="font-mono font-bold text-xs px-2.5 py-1 rounded-lg bg-slate-800/90 text-white border border-slate-700 shadow-sm">
@@ -642,15 +642,8 @@
                 </span>
               </div>
 
-              <!-- Deck Theme Switcher & 3D Toggle -->
+              <!-- 3D/2D Toggle -->
               <div class="flex items-center space-x-1.5 pointer-events-auto">
-                <!-- Dedicated 3D Deck Light/Dark Mode Switch -->
-                <button onclick="toggleDeckTheme()" id="btnDeckTheme" class="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700 text-xs font-mono font-bold text-amber-300 hover:text-white active:scale-95 transition-all shadow-sm flex items-center space-x-1" title="Toggle 3D Deck Lighting (Light/Dark)">
-                  <span id="deckThemeIcon">☀</span>
-                  <span id="deckThemeLabel">Deck Light</span>
-                </button>
-
-                <!-- 3D/2D Toggle -->
                 <button onclick="toggle3D()" class="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700 text-xs font-mono font-bold text-white hover:text-amber-400 active:scale-95 transition-all shadow-sm">
                   <span id="toggle3DLabel">3D</span>
                 </button>
@@ -1123,7 +1116,7 @@
 
     // Global State
     let currentTheme = 'light';
-    let currentDeckTheme = 'dark'; // Independent 3D Deck theme: 'dark' or 'light'
+    let currentDeckTheme = 'light'; // Synchronized with currentTheme
     let selectedTownshipKey = 'venice';
     let currentLevel = '4F';
     let is3D = true;
@@ -1150,10 +1143,29 @@
     };
 
     /* ==========================================================================
-       2. APP THEME & INDEPENDENT 3D DECK THEME CONTROLLERS
+       2. APP THEME & PARKING DECK THEME CONTROLLER
        ========================================================================== */
+    function applyDeckTheme() {
+      const container = document.getElementById('deckMainContainer');
+      if (!container) return;
+
+      if (currentTheme === 'light') {
+        container.classList.remove('deck-container-dark');
+        container.classList.add('deck-container-light');
+      } else {
+        container.classList.remove('deck-container-light');
+        container.classList.add('deck-container-dark');
+      }
+
+      // Re-render floor buttons to ensure optimal contrast
+      if (typeof renderLevelSwitcher === 'function') {
+        renderLevelSwitcher();
+      }
+    }
+
     function setTheme(mode) {
       currentTheme = mode;
+      currentDeckTheme = mode;
       const btnLight = document.getElementById('btnThemeLight');
       const btnDark = document.getElementById('btnThemeDark');
 
@@ -1177,6 +1189,8 @@
         }
       }
 
+      applyDeckTheme();
+
       if (typeof recalculateSimulation === 'function') {
         recalculateSimulation();
       }
@@ -1187,34 +1201,6 @@
     }
 
     setTheme('light');
-
-    // INDEPENDENT 3D DECK THEME SWITCHER
-    function toggleDeckTheme() {
-      currentDeckTheme = (currentDeckTheme === 'dark') ? 'light' : 'dark';
-      applyDeckTheme();
-    }
-
-    function applyDeckTheme() {
-      const container = document.getElementById('deckMainContainer');
-      const label = document.getElementById('deckThemeLabel');
-      const icon = document.getElementById('deckThemeIcon');
-
-      if (currentDeckTheme === 'light') {
-        container.classList.remove('deck-container-dark');
-        container.classList.add('deck-container-light');
-        if (label) label.innerText = "Deck Dark";
-        if (icon) icon.innerText = "☾";
-      } else {
-        container.classList.remove('deck-container-light');
-        container.classList.add('deck-container-dark');
-        if (label) label.innerText = "Deck Light";
-        if (icon) icon.innerText = "☀";
-      }
-
-      // Re-render floor buttons and stalls to ensure optimal contrast
-      renderLevelSwitcher();
-      recalculateSimulation();
-    }
 
     /* ==========================================================================
        3. REAL-TIME CLOCK & TIME-DEPENDENT GREETING
