@@ -163,6 +163,7 @@
       transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease;
       background-image: radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
       background-size: 14px 14px;
+      box-shadow: none !important;
     }
 
     .deck-surface.flat-mode {
@@ -663,7 +664,7 @@
 
             <!-- 3D Viewport Deck Canvas -->
             <div class="deck-viewport w-full h-full absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div id="deckSurface" class="deck-surface pointer-events-auto relative w-[285px] sm:w-[305px] h-[230px] rounded-2xl p-3 shadow-[0_25px_60px_rgba(0,0,0,0.95)] flex flex-col justify-between border">
+              <div id="deckSurface" class="deck-surface pointer-events-auto relative w-[285px] sm:w-[305px] h-[230px] rounded-2xl p-3 flex flex-col justify-between border">
                 
                 <!-- TOP BANK: 2 Rows of 6 Stalls (Bays 1-6 & 7-12) -->
                 <div class="space-y-1.5">
