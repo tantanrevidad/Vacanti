@@ -800,18 +800,18 @@
             <div class="grid grid-cols-3 gap-2 pt-1">
               <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
                 <span class="text-[10px] uppercase font-bold text-slate-400">Baseline</span>
-                <p id="predBaseline" class="text-base font-black font-mono mt-0.5 text-slate-800 dark:text-slate-200">48%</p>
-                <span class="text-[9px] text-slate-500">Historical Avg</span>
+                <p id="predBaseline" class="text-base font-black font-mono mt-0.5" style="color: var(--text-primary);">48%</p>
+                <span class="text-[9px]" style="color: var(--text-muted);">Historical Avg</span>
               </div>
               <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
                 <span class="text-[10px] uppercase font-bold text-slate-400">ML Model</span>
                 <p id="predTrained" class="text-base font-black font-mono mt-0.5 text-sky-500">56%</p>
-                <span class="text-[9px] text-slate-500">Gradient-Boost</span>
+                <span class="text-[9px]" style="color: var(--text-muted);">Gradient-Boost</span>
               </div>
               <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
                 <span class="text-[10px] uppercase font-bold text-slate-400">Adjusted</span>
                 <p id="predAdjusted" class="text-base font-black font-mono mt-0.5" style="color: var(--accent-gold);">59%</p>
-                <span class="text-[9px] text-slate-500">Safety Margin</span>
+                <span class="text-[9px]" style="color: var(--text-muted);">Safety Margin</span>
               </div>
             </div>
 
@@ -819,18 +819,18 @@
             <div class="grid grid-cols-3 gap-2 pt-1">
               <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
                 <span class="text-[10px] uppercase font-bold text-slate-400">Foot-Traffic</span>
-                <p id="predBusyness" class="text-xs font-black font-mono mt-0.5 text-slate-800 dark:text-slate-200">65 / 100</p>
-                <span class="text-[9px] text-slate-500">Popular Times</span>
+                <p id="predBusyness" class="text-xs font-black font-mono mt-0.5" style="color: var(--text-primary);">65 / 100</p>
+                <span class="text-[9px]" style="color: var(--text-muted);">Popular Times</span>
               </div>
               <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
                 <span class="text-[10px] uppercase font-bold text-slate-400">Weather</span>
-                <p id="predWeather" class="text-xs font-black font-mono mt-0.5 text-slate-800 dark:text-slate-200">29°C</p>
-                <span id="predWeatherSub" class="text-[9px] text-slate-500">Partly Cloudy</span>
+                <p id="predWeather" class="text-xs font-black font-mono mt-0.5" style="color: var(--text-primary);">29°C</p>
+                <span id="predWeatherSub" class="text-[9px]" style="color: var(--text-muted);">Partly Cloudy</span>
               </div>
               <div class="rounded-xl p-2.5 text-center border" style="background-color: var(--bg-card-subtle); border-color: var(--border-card);">
                 <span class="text-[10px] uppercase font-bold text-slate-400">Road Delay</span>
                 <p id="predDelay" class="text-xs font-black font-mono mt-0.5 text-amber-500">+8 mins</p>
-                <span id="predDelaySub" class="text-[9px] text-slate-500">Moderate Flow</span>
+                <span id="predDelaySub" class="text-[9px]" style="color: var(--text-muted);">Moderate Flow</span>
               </div>
             </div>
 
@@ -1157,7 +1157,8 @@
       const btnDark = document.getElementById('btnThemeDark');
 
       if (mode === 'dark') {
-        document.body.classList.add('dark-theme');
+        document.body.classList.add('dark-theme', 'dark');
+        document.documentElement.classList.add('dark');
         if (btnDark) {
           btnDark.className = "px-2.5 py-1 rounded-full flex items-center space-x-1 transition-all bg-amber-600 text-white shadow-sm font-black";
         }
@@ -1165,7 +1166,8 @@
           btnLight.className = "px-2.5 py-1 rounded-full flex items-center space-x-1 transition-all text-slate-400 hover:text-white font-medium";
         }
       } else {
-        document.body.classList.remove('dark-theme');
+        document.body.classList.remove('dark-theme', 'dark');
+        document.documentElement.classList.remove('dark');
         if (btnLight) {
           btnLight.className = "px-2.5 py-1 rounded-full flex items-center space-x-1 transition-all bg-amber-700 text-white shadow-sm font-black";
         }
