@@ -96,20 +96,92 @@ def build_vehicle_pool(n_regulars=350, zipf_exponent=0.55, seed=42):
 
 
 class VehiclePoolDrawer:
-    def __init__(self, n_regulars=350, repeat_prob=0.18, seed=42):
-        self.reg_plates, self.reg_weights = build_vehicle_pool(n_regulars, seed=seed)
-        self.repeat_prob = repeat_prob
-        self.transient_pool = []
-        self.rng = random.Random(seed + 7)
+    """
+    Simulates realistic vehicle plate drawing with archetype-calibrated cohorts:
+      - Residential: High repeat frequency (residents parking daily/overnight ~75-85% Loyal),
+        moderate recurring guests (~7-15% Returning), minimal transient (~5-10% New).
+      - Office: Weekday corporate commuters parking 5 days/wk (~55-65% Loyal),
+        hybrid workers/contractors (~15-20% Returning), meeting visitors (~20-30% New).
+      - Mall: Diverse metro retail visitors, predominantly transient (~65-75% New),
+        occasional shoppers (~15-20% Returning), dedicated regulars (~10-15% Loyal).
+    """
 
-    def draw(self):
-        if np.random.random() < self.repeat_prob:
-            return str(np.random.choice(self.reg_plates, p=self.reg_weights))
-        if self.transient_pool and np.random.random() < 0.12:
-            return self.rng.choice(self.transient_pool)
+    def __init__(self, seed=42):
+        self.rng = random.Random(seed)
+        self.np_rng = np.random.default_rng(seed)
+        self.zone_pools = {}
+        self.global_transient = []
+
+        for site_idx in range(len(SITES)):
+            for ztype in ["mall", "office", "residential"]:
+                key = (site_idx, ztype)
+                if ztype == "residential":
+                    # Residents (daily/frequent) + recurring guests/services
+                    n_loyal = 16
+                    n_ret = 30
+                    loyal_plates = [random_plate() for _ in range(n_loyal)]
+                    ret_plates = [random_plate() for _ in range(n_ret)]
+                    self.zone_pools[key] = {
+                        "loyal": loyal_plates,
+                        "returning": ret_plates,
+                        "p_loyal": 0.70,
+                        "p_returning": 0.22,
+                    }
+                elif ztype == "office":
+                    # Corporate office commuters (Mon-Fri) + hybrid workers & regular clients
+                    n_loyal = 24
+                    n_ret = 110
+                    loyal_plates = [random_plate() for _ in range(n_loyal)]
+                    ret_plates = [random_plate() for _ in range(n_ret)]
+                    self.zone_pools[key] = {
+                        "loyal": loyal_plates,
+                        "returning": ret_plates,
+                        "p_loyal_wd": 0.60,
+                        "p_returning_wd": 0.24,
+                        "p_loyal_we": 0.15,
+                        "p_returning_we": 0.22,
+                    }
+                else:  # mall
+                    # Retail mall visitors (mostly transient, minority regular shoppers)
+                    n_loyal = 40
+                    n_ret = 250
+                    loyal_plates = [random_plate() for _ in range(n_loyal)]
+                    ret_plates = [random_plate() for _ in range(n_ret)]
+                    self.zone_pools[key] = {
+                        "loyal": loyal_plates,
+                        "returning": ret_plates,
+                        "p_loyal": 0.10,
+                        "p_returning": 0.22,
+                    }
+
+    def draw(self, zone_type="mall", is_weekend=False, site_idx=0):
+        key = (site_idx, zone_type)
+        pool = self.zone_pools.get(key)
+        if not pool:
+            return random_plate()
+
+        if zone_type == "residential":
+            p_loy = pool["p_loyal"]
+            p_ret = pool["p_returning"]
+        elif zone_type == "office":
+            p_loy = pool["p_loyal_we"] if is_weekend else pool["p_loyal_wd"]
+            p_ret = pool["p_returning_we"] if is_weekend else pool["p_returning_wd"]
+        else:
+            p_loy = pool["p_loyal"]
+            p_ret = pool["p_returning"]
+
+        u = self.np_rng.random()
+        if u < p_loy:
+            return self.rng.choice(pool["loyal"])
+        elif u < p_loy + p_ret:
+            return self.rng.choice(pool["returning"])
+
+        # Transient draw
+        if self.global_transient and self.np_rng.random() < 0.05:
+            return self.rng.choice(self.global_transient)
         fresh = random_plate()
-        if len(self.transient_pool) < 2500:
-            self.transient_pool.append(fresh)
+        if len(self.global_transient) < 3000:
+            self.global_transient.append(fresh)
         return fresh
 
 
@@ -373,7 +445,7 @@ def main():
     is_weekend_now = now.weekday() >= 5
 
     # Pre-build vehicle pool drawer for realistic repeat visitor dynamics
-    pool_drawer = VehiclePoolDrawer(n_regulars=350, repeat_prob=0.22, seed=42)
+    pool_drawer = VehiclePoolDrawer(seed=42)
 
     for zi, z in enumerate(ZONES, start=1):
         site_name = SITES[z["site_idx"]]["name"]
@@ -388,7 +460,7 @@ def main():
                 state_rows.append((sid, "free", now.isoformat()))
                 continue
 
-            plate = pool_drawer.draw()
+            plate = pool_drawer.draw(zone_type=z["zone_type"], is_weekend=is_weekend_now, site_idx=z["site_idx"])
             # ~45% of currently-occupied slots have a settled payment on file
             has_paid_ticket = random.random() < 0.45
             ticket_id = f"TCK{ticket_counter:05d}"
@@ -430,7 +502,7 @@ def main():
             zone_slot_ids = [row[0] for row in slot_rows if row[1] == zi]
             
             for _ in range(n_sessions):
-                plate = pool_drawer.draw()
+                plate = pool_drawer.draw(zone_type=ztype, is_weekend=is_wknd, site_idx=z["site_idx"])
                 ticket_id = f"TCK{ticket_counter:05d}"
                 ticket_counter += 1
                 sid = random.choice(zone_slot_ids)
